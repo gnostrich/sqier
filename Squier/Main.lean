@@ -163,7 +163,7 @@ theorem nfPath_step (hR : Terminating R) {u v : List α} (s : Step R u v) :
   have h : ∃ v, Rewrites R u v := ⟨v, ⟨s⟩⟩
   refine ⟨h.choose, h.choose_spec.some, ?_⟩
   conv_lhs => rw [nfPath_eq]
-  rw [nfPathStep, dif_pos h]
+  rw [nfPathStep, dite_eq_left h]
 
 /-! ## The key lemma -/
 

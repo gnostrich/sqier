@@ -91,7 +91,7 @@ parallel paths, finite derivation type would hold trivially; it does not.
 | `Squier/CriticalPair.lean` | The critical pair lemma; confluence of terminating systems |
 | `Squier/PathLemmas.lean` | Path algebra, casts along word equalities, the homotopy congruence |
 | `Squier/Main.lean` | Squier's theorem: normal-form paths, noetherian induction, the homotopy basis; finite derivation type |
-| `Squier/S3.lean` | The `S₃` example: non-degeneracy invariant, termination, enumeration of critical branchings, the explicit basis |
+| `Squier/S3Aux.lean`, `Squier/S3.lean` | The `S₃` example: non-degeneracy invariant, termination, enumeration of the ten critical branchings, the explicit basis |
 
 ## Building
 

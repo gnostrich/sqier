@@ -246,7 +246,7 @@ automation:
         separate agent searched for earlier formalizations and checked the
         bibliographic data.
       cost:
-        wall_time: "WALLTIME"
+        wall_time: "about one and a half hours"
         spend_usd: "not tracked"
         hardware: "cloud container, 4 cores"
       prompting_notes: >-
