@@ -1,0 +1,21 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "SquierChallenge.newman",
+    "SquierChallenge.critical_pair_lemma",
+    "SquierChallenge.confluent_iff_criticalPairs_joinable",
+    "SquierChallenge.criticalBranchings_finite",
+    "SquierChallenge.squier_homotopy_basis",
+    "SquierChallenge.squier_finiteDerivationType",
+    "SquierChallenge.homotopy_nondegenerate",
+    "SquierChallenge.s3_convergent",
+    "SquierChallenge.s3_homotopy_basis"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}
