@@ -1,0 +1,85 @@
+name: consolidated build
+
+on:
+  push:
+    branches: [main, claude/clever-franklin-xtss9s]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan with the pinned toolchain
+        run: |
+          curl -sSfL https://elan.lean-lang.org/elan-init.sh \
+            | sh -s -- -y --default-toolchain "$(cat lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Get Mathlib olean cache
+        run: lake exe cache get
+
+      - name: Build all modules
+        shell: bash
+        run: |
+          set -o pipefail
+          lake build 2>&1 | tee build.log
+
+      - name: Sorry census — no sorry anywhere in the development
+        shell: bash
+        run: |
+          if grep "declaration uses" build.log; then
+            echo "::error::sorry warning found; the development must be sorry-free"
+            exit 1
+          fi
+          echo "sorry census OK: no sorry anywhere in the development"
+
+  # Comparator verification the way Palomar runs it: with the `lake comparator`
+  # bundled in the toolchain named by lean-toolchain (v4.35.0-rc2 or later),
+  # replaying the solution through Lean's kernel and the toolchain's bundled
+  # independent kernels, NanoDa and con-ron. Nothing that judges is built from
+  # a separate pin. Palomar registers those kernels itself, so the submitted
+  # comparator.json carries none; this job adds them to a generated copy.
+  comparator:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan with the pinned toolchain
+        run: |
+          curl -sSfL https://elan.lean-lang.org/elan-init.sh \
+            | sh -s -- -y --default-toolchain "$(cat lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Install bubblewrap for lake comparator's sandbox
+        # Ubuntu 24.04 restricts unprivileged user namespaces through AppArmor,
+        # which bwrap needs; the runner is disposable.
+        run: |
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq bubblewrap >/dev/null
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Get Mathlib olean cache
+        run: lake exe cache get
+
+      - name: Run lake comparator (classical axioms only; Lean, NanoDa and con-ron kernels)
+        run: |
+          prefix=$(lean --print-prefix)
+          for cfg in comparator.json; do
+            echo "::group::lake comparator: $cfg"
+            python3 - "$prefix" "$cfg" > "$RUNNER_TEMP/$cfg" <<'PY'
+          import json, sys
+          prefix, cfg = sys.argv[1], sys.argv[2]
+          config = json.load(open(cfg))
+          config["external_kernels"] = {
+              "nanoda": [f"{prefix}/bin/nanoda_bin"],
+              "con-ron": [f"{prefix}/bin/con-ron"],
+          }
+          print(json.dumps(config, indent=2))
+          PY
+            lake comparator --config "$RUNNER_TEMP/$cfg"
+            echo "::endgroup::"
+          done
