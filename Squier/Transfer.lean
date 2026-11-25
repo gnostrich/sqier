@@ -23,6 +23,8 @@ The proof goes through a transfer matrix:
 
 namespace Squier
 
+open Matrix
+
 /-- A sequence satisfying eventually a linear recurrence with monic characteristic polynomial
 has a rational generating function. -/
 theorem hasRationalGF_of_rec (a : ℕ → ℤ) (c : Polynomial ℤ) (hc : c.Monic) (N : ℕ)
@@ -49,7 +51,7 @@ theorem hasRationalGF_of_rec (a : ℕ → ℤ) (c : Polynomial ℤ) (hc : c.Moni
       · intro i _ hi
         rw [Finset.mem_range] at hi
         rw [Polynomial.coeff_eq_zero_of_natDegree_lt, zero_mul]
-        calc c.reverse.natDegree ≤ d := Polynomial.natDegree_reverse c
+        calc c.reverse.natDegree ≤ d := Polynomial.reverse_natDegree_le c
           _ < i := by omega
 
 /-- A sequence given by a transfer matrix, from some offset on, has a rational generating
@@ -89,7 +91,9 @@ def extCount (F : Finset (List α)) (n : ℕ) (l : List α) : ℤ :=
 
 theorem avoidCount_eq_extCount (F : Finset (List α)) (n : ℕ) :
     (avoidCount F n : ℤ) = extCount F n [] := by
-  simp [avoidCount, extCount, Finset.card_filter]
+  unfold avoidCount extCount
+  rw [Finset.natCast_card_filter]
+  simp only [List.nil_append]
 
 theorem extCount_succ (F : Finset (List α)) (n : ℕ) (l : List α) :
     extCount F (n + 1) l = ∑ x : α, extCount F n (l ++ [x]) := by
@@ -130,8 +134,9 @@ theorem extCount_cons (F : Finset (List α)) (n : ℕ) (l : List α) (hl : l ≠
   unfold extCount
   simp_rw [hiff]
   by_cases h1 : ∀ f ∈ F, ¬ f <+: b :: l'
-  · simp [h1]
-  · simp [h1]
+  · simp only [eq_true h1, ite_true, true_and, one_mul]
+    rfl
+  · simp only [eq_false h1, ite_false, false_and, zero_mul, Finset.sum_const_zero]
 
 /-- The transfer matrix on states of length `k`. -/
 def nextState (k : ℕ) (s : List.Vector α k) (x : α) : List.Vector α k :=
@@ -151,10 +156,10 @@ theorem extCount_transfer (F : Finset (List α)) (k : ℕ) (hk : ∀ f ∈ F, f.
   refine Finset.sum_congr rfl fun x _ => ?_
   rw [extCount_cons F n _ (by simp) (fun f hf => by simpa using (hk f hf).trans (Nat.le_succ k))]
   by_cases h1 : ∀ f ∈ F, ¬ f <+: s.toList ++ [x]
-  · simp only [h1, true_and, if_true, one_mul, ite_mul, zero_mul, Finset.sum_ite_eq',
-      Finset.mem_univ]
+  · simp only [eq_true h1, ite_true, true_and, one_mul, ite_mul, zero_mul,
+      Finset.sum_ite_eq', Finset.mem_univ]
     rfl
-  · simp [h1]
+  · simp only [eq_false h1, ite_false, false_and, zero_mul, Finset.sum_const_zero]
 
 theorem extCount_pow (F : Finset (List α)) (k : ℕ) (hk : ∀ f ∈ F, f.length ≤ k) (n : ℕ) :
     (fun s : List.Vector α k => extCount F n s.toList) =
