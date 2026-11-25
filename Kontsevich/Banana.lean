@@ -266,8 +266,7 @@ lemma sum_succ (n : ℕ) (g : F → F → ℤ) :
       ∑ b : (banana n).toGraph.E → F, ∑ x : F, g (psi n b * x + phi n b) (phi n b * x) := by
   rw [← Fintype.sum_prod_type']
   refine Fintype.sum_equiv (splitEquiv n) _ _ (fun a => ?_)
-  rw [psi_succ, phi_succ]
-  rfl
+  exact congrArg₂ g (psi_succ n a) (phi_succ n a)
 
 /-- The edge-variable map of `banana 0`. -/
 def zeroEquiv : ((banana 0).toGraph.E → F) ≃ F where
@@ -375,5 +374,18 @@ lemma pointCount_eq (n : ℕ) :
 end BananaAux
 
 open BananaAux in
+/-- The point count of the graph hypersurface of the banana graph with `m = n + 1` parallel
+edges, multiplied by `q`. -/
+theorem banana_count (n : ℕ) (F : Type) [Field F] [Fintype F] :
+    (Fintype.card F : ℤ) * pointCount (banana n).toGraph.ends F =
+      (Fintype.card F : ℤ) ^ (n + 2) -
+        (Fintype.card F : ℤ) * ((Fintype.card F : ℤ) - 1) ^ (n + 1) -
+        ((n : ℤ) + 1) * (Fintype.card F : ℤ) * ((Fintype.card F : ℤ) - 1) ^ n +
+        ((Fintype.card F : ℤ) - 1) ^ (n + 1) +
+        (-1) ^ (n + 1) * ((Fintype.card F : ℤ) - 1) := by
+  classical
+  obtain ⟨hA, hB, -, -⟩ := closed (F := F) n
+  rw [pointCount_eq]
+  linear_combination (Fintype.card F : ℤ) * hA + hB
 
 end Kontsevich
