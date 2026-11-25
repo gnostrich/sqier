@@ -6,6 +6,16 @@ public import Kontsevich.PolysAux
 
 @[expose] public section
 
+/-!
+# Graph polynomials of series and parallel compositions
+
+A set of edges of a composite graph splits as a disjoint sum `a.disjSum b` of edge sets of the two
+parts. We characterize spanning trees and separating 2-forests of the composite in terms of `a`
+and `b` (`series_tree_iff`, `series_forest_iff`, `parallel_tree_iff`, `parallel_forest_iff`),
+transporting `Joined` along the gluing maps and projections and counting edges with the forest
+inequality `card_le_of_roots`. The polynomial identities then follow by splitting the sums.
+-/
+
 namespace Kontsevich
 
 open MvPolynomial

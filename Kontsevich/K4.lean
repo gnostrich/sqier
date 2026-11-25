@@ -450,13 +450,16 @@ theorem cgh :
   · refine cnt_lin_eq (A := q) (B := q ^ 2 - q) (fun z => sH1 z.1 z.2.1 z.2.2.1 z.2.2.2.1)
       (fun z => sH0 z.1 z.2.1 z.2.2.1 z.2.2.2.1)
       (fun z => sS z.1 z.2.1 z.2.2.1 z.2.2.2.1 = 0 ∧ sP z.1 z.2.1 z.2.2.1 z.2.2.2.1 = 0)
-      (fun x y => alg_B x y.1 y.2.1 y.2.2.1 y.2.2.2.1) c5 ?_ (by ring)
-    exact cnt_ne_eq c2 c6 (by ring)
+      ?_ ?_ ?_ (by ring)
+    · exact fun x y => alg_B x y.1 y.2.1 y.2.2.1 y.2.2.2.1
+    · exact c5
+    · exact cnt_ne_eq c2 c6 (by ring)
   · refine cnt_lin_eq (A := 0) (B := q ^ 3 - q ^ 2) (fun z => sS z.1 z.2.1 z.2.2.1 z.2.2.2.1)
       (fun z => sP z.1 z.2.1 z.2.2.1 z.2.2.2.1)
       (fun z => sD z.1 z.2.1 z.2.2.1 z.2.2.2.1 = 0 ∧ sS z.1 z.2.1 z.2.2.1 z.2.2.2.1 ≠ 0)
-      (fun x y => alg_A x y.1 y.2.1 y.2.2.1 y.2.2.2.1)
-      (cnt_false (fun z h => h.2.2.2 h.1)) ?_ (by ring)
+      ?_ ?_ ?_ (by ring)
+    · exact fun x y => alg_A x y.1 y.2.1 y.2.2.1 y.2.2.2.1
+    · exact cnt_false (fun z h => h.2.2.2 h.1)
     exact cnt_congr_eq (fun z => ⟨fun h => ⟨h.1, h.2.1⟩, fun h => ⟨h.1, h.2, h.1⟩⟩)
       (cnt_ne_eq (R := fun z : F × F × F × F × Unit => sD z.1 z.2.1 z.2.2.1 z.2.2.2.1 = 0)
         c3 c4 (by ring))
@@ -470,8 +473,11 @@ theorem cfinal :
   by
   refine cnt_lin'_eq (A := q ^ 3 + q ^ 2 - q) (B := q ^ 5 - q ^ 4)
     (fun y => gK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1)
-    (fun y => hK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1) (fun _ _ => Iff.rfl) cgh cgne ?_
-  ring
+    (fun y => hK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1) ?_ ?_ ?_ ?_
+  · intro x y; exact Iff.rfl
+  · exact cgh
+  · exact cgne
+  · ring
 
 /-- Reordering the coordinates as `(a, f, b, c, d, e)`. -/
 def k4Equiv : (Fin 6 → F) ≃ F × F × F × F × F × F × Unit where
