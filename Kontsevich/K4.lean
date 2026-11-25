@@ -236,11 +236,13 @@ section Count
 
 variable {α β : Type} [Fintype α]
 
+omit [Fintype α] in
 theorem cnt_congr_eq {P Q : α → Prop} {n : ℤ} (h : ∀ x, P x ↔ Q x) (hQ : cnt Q = n) :
     cnt P = n := by
   have : P = Q := funext fun x => propext (h x)
   rw [this, hQ]
 
+omit [Fintype α] in
 theorem cnt_equiv {P : α → Prop} {Q : β → Prop} (e : α ≃ β) (h : ∀ x, P x ↔ Q (e x)) :
     cnt P = cnt Q := by
   unfold cnt
