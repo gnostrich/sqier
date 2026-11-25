@@ -1,5 +1,5 @@
 name = "Sqier"
-defaultTargets = ["Squier", "Solution", "SolutionGrowth", "Fagin", "SolutionFagin"]
+defaultTargets = ["Squier", "Solution", "SolutionGrowth", "Fagin", "SolutionFagin", "Kontsevich", "SolutionKontsevich"]
 
 [[require]]
 name = "mathlib"
@@ -35,3 +35,13 @@ name = "ChallengeFagin"
 
 [[lean_lib]]
 name = "SolutionFagin"
+
+[[lean_lib]]
+name = "Kontsevich"
+globs = ["Kontsevich", "Kontsevich.+"]
+
+[[lean_lib]]
+name = "ChallengeKontsevich"
+
+[[lean_lib]]
+name = "SolutionKontsevich"
