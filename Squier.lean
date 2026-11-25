@@ -8,3 +8,6 @@ public import Squier.PathLemmas
 public import Squier.Main
 public import Squier.S3Aux
 public import Squier.S3
+public import Squier.GrowthDefs
+public import Squier.Transfer
+public import Squier.Growth

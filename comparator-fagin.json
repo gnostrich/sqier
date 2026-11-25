@@ -1,0 +1,19 @@
+{
+  "challenge_module": "ChallengeFagin",
+  "solution_module": "SolutionFagin",
+  "theorem_names": [
+    "FaginChallenge.card_simpleGraph",
+    "FaginChallenge.extension_almost_sure",
+    "FaginChallenge.radoGraph_extension",
+    "FaginChallenge.nonempty_iso_of_extension",
+    "FaginChallenge.tendsto_one_of_rado",
+    "FaginChallenge.tendsto_zero_of_not_rado",
+    "FaginChallenge.zero_one_law"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}
