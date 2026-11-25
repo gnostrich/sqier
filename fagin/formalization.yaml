@@ -1,0 +1,266 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+# formalization.yaml v0.4. Third Palomar entry from this repository (Fagin's zero-one law).
+# Comparator configuration: comparator-fagin.json.
+version: "v0.4"
+
+project:
+  name: "Fagin's zero-one law: every first-order sentence about graphs holds in G(n, 1/2) with probability tending to 0 or 1, and the limit is 1 exactly when the Rado graph satisfies it"
+  description: >-
+    For a first-order sentence phi in Mathlib's language of graphs, let
+    graphProb phi n be the proportion of the 2^(n choose 2) labelled simple
+    graphs on n vertices that satisfy phi, i.e. the probability that the
+    Erdős–Rényi random graph G(n, 1/2) satisfies phi. This entry proves in
+    Lean 4 and Mathlib the zero-one law of Glebskii, Kogan, Liogon'kii and
+    Talanov (1969) and Fagin (1976): graphProb phi n tends to 0 or to 1. It
+    proves the sharper form that the limit is 1 exactly when the Rado graph
+    satisfies phi, so the almost-sure theory of finite graphs is the
+    complete theory of the Rado graph. Seven statements are compared.
+
+    (1) There are 2^(n choose 2) simple graphs on Fin n, so graphProb is a
+    probability. (2) For each k, the proportion of graphs on n vertices
+    with the k-extension property tends to 1: for disjoint vertex sets A, B
+    with |A| + |B| <= k some vertex outside A and B is adjacent to all of A
+    and none of B. The proof is a union bound over the pairs (A, B) with
+    independence of disjoint sets of edges, giving failure probability at
+    most a polynomial in n times a geometric factor. (3) The Rado graph,
+    on the natural numbers with i ~ j iff bit min(i, j) of max(i, j) is 1,
+    has every extension property. (4) Any two countable graphs with every
+    extension property are isomorphic, by a back-and-forth construction.
+    (5)-(6) If the Rado graph satisfies phi then graphProb phi n -> 1, and
+    otherwise graphProb phi n -> 0. (7) The zero-one law.
+
+    The proof of (5)-(6) is the classical one. First-order extension
+    sentences axiomatize, with the axioms of simple graphs, a theory T whose
+    models are the graphs with every extension property. T is satisfiable
+    (the Rado graph), has no finite models, and is aleph-0-categorical by
+    (4), so it is complete by Mathlib's Łoś–Vaught test. If the Rado graph
+    satisfies phi, then T proves phi, and by Mathlib's compactness theorem
+    finitely many extension properties already force phi; (2) then gives
+    probability tending to 1. Otherwise T proves the negation of phi. The
+    results are classical. SEARCHSENTENCE
+  authors:
+    - "Rohan Badade"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Rohan Badade"
+
+classification:
+  arxiv: ["math.LO", "math.CO"]
+  msc2020: ["03C13", "05C80", "60C05", "03C35"]
+
+sources:
+  - title: "Probabilities on finite models"
+    authors:
+      - "Ronald Fagin"
+    id: "FAGINID"
+    type: paper
+    location: "FAGINLOC"
+    relationship: formalizes
+    license: "unknown"
+    author_endorsement: not-contacted
+    note: >-
+      The zero-one law for first-order sentences, result (7), in the case of
+      graphs with edge probability 1/2, and its proof through extension
+      axioms and a complete aleph-0-categorical theory, results (2)-(6).
+      Fagin's general form (any finite relational vocabulary) and other
+      edge probabilities are not formalized.
+  - title: "Range and degree of realizability of formulas in the restricted predicate calculus"
+    authors:
+      - "Y. V. Glebskii"
+      - "D. I. Kogan"
+      - "M. I. Liogon'kii"
+      - "V. A. Talanov"
+    id: "GKLTID"
+    type: paper
+    location: "GKLTLOC"
+    relationship: formalizes
+    license: "unknown"
+    author_endorsement: "n/a"
+    note: "The original proof of the zero-one law (independently of Fagin); result (7)."
+  - title: "Universal graphs and universal functions"
+    authors:
+      - "Richard Rado"
+    id: "RADOID"
+    type: paper
+    location: "RADOLOC"
+    relationship: background
+    license: "unknown"
+    author_endorsement: "n/a"
+    note: "The explicit construction of the Rado graph used here (binary digits), result (3)."
+  - title: "The random graph"
+    authors:
+      - "Peter J. Cameron"
+    id: "arXiv:1301.7544"
+    type: survey
+    location: "CAMERONLOC"
+    relationship: background
+    license: "unknown"
+    author_endorsement: not-contacted
+    note: "Survey of the Rado graph: the extension property, uniqueness by back and forth, and the zero-one law."
+  - title: "mathlib4: the Lean mathematical library"
+    authors:
+      - "The Mathlib Community"
+    id: "https://github.com/leanprover-community/mathlib4"
+    type: other
+    location: "Mathlib v4.35.0, as pinned by lakefile.toml and lake-manifest.json"
+    relationship: background
+    license: "Apache-2.0"
+    author_endorsement: "n/a"
+    note: >-
+      The ambient library. ChallengeFagin.lean imports only Mathlib, which
+      supplies first-order logic and the language of graphs, the compactness
+      theorem, the Łoś–Vaught test (Cardinal.Categorical.isComplete), simple
+      graphs and their isomorphisms, and real limits. Mathlib has no
+      extension axioms, Rado graph or zero-one law; these are developed here.
+
+related_formalizations: []
+
+status:
+  scope: >-
+    Formalized: exactly the seven statements listed in comparator-fagin.json
+    and stated in ChallengeFagin.lean, with sorry-free proofs in Fagin/. All
+    are unconditional.
+
+    Not claimed. Edge probabilities other than 1/2 (or p = p(n)); vocabularies
+    other than a single symmetric irreflexive relation (Fagin's general
+    form); decidability of the limit (the theory is complete and
+    recursively axiomatized, but computability is not stated); monadic
+    second-order or other logics; rates of convergence beyond those implicit
+    in the proof. The results are classical; priority among formalizations
+    is unknown. Proof terms were not reviewed line by line by a human; see
+    the review block.
+
+    Sorry and native_decide. The development is sorry-free and
+    native_decide-free, and the compared theorems depend only on propext,
+    Classical.choice and Quot.sound. ChallengeFagin.lean's seven deliberate
+    sorries are the comparator placeholders and are not counted.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: agent
+      models: ["Claude (Anthropic)"]
+      framework: "Claude Code"
+      tool_setup: >-
+        From the author's brief, Claude (Anthropic) fixed the definitions and
+        Lean statements, wrote ChallengeFagin.lean, SolutionFagin.lean,
+        comparator-fagin.json and this file, and checked the statement
+        surface with lake comparator against sorried interfaces. Three
+        parallel Claude agents wrote the proofs (the counting bound for
+        extension properties; the Rado graph and back and forth; extension
+        sentences, completeness by Łoś–Vaught and compactness) by iterating
+        against the Lean compiler on the pinned toolchain. A separate agent
+        searched for earlier formalizations and checked the bibliographic
+        data.
+      cost:
+        wall_time: "about one hour"
+        spend_usd: "not tracked"
+        hardware: "cloud container, 4 cores"
+      prompting_notes: >-
+        Work was posed as written targets with fixed signatures, a short
+        mathematical route per agent, and the axiom budget (propext,
+        Quot.sound, Classical.choice only; no sorry, no native_decide).
+    - method: manual
+      models: []
+      framework: "n/a"
+      tool_setup: >-
+        The human author chose the target (asymptotic laws of truth on
+        finite structures), wrote the brief with the statement and proof
+        route, and takes responsibility for all claims.
+      cost:
+        wall_time: "not tracked"
+        spend_usd: "not tracked"
+        hardware: "not tracked"
+      prompting_notes: "n/a"
+  spend_usd: "not tracked"
+  notes: >-
+    Human conception and brief; AI-designed statements and AI-written Lean
+    proofs (Claude). No human has reviewed the proof terms line by line. The
+    trust model is Lean's kernel plus the axiom audit and the comparator
+    check described under review.
+
+fidelity:
+  divergences: >-
+    Between the repository and ChallengeFagin.lean, which is what Palomar
+    compares: ChallengeFagin.lean imports only Mathlib and contains verbatim
+    copies of the three definitions in Fagin/Defs.lean (graphProb,
+    ExtensionProperty, radoGraph), in the namespace Fagin; the statements are
+    in the namespace FaginChallenge. There are no individual statement
+    deviations.
+
+    Against the sources: the random graph G(n, 1/2) is represented by the
+    uniform count over labelled simple graphs on Fin n (no probability
+    measure is used; the two are the same distribution). Sentences are those
+    of Mathlib's first-order language of graphs, a single binary relation
+    symbol, interpreted in a simple graph as adjacency; Fagin's theorem for
+    arbitrary finite relational vocabularies is not stated. The k-extension
+    property is stated for finite sets A, B with |A| + |B| <= k rather than
+    as a family of first-order axioms; the first-order extension sentences
+    appear only inside the proof. The limit statement is given as two
+    theorems (limit 1 if the Rado graph satisfies phi, limit 0 otherwise).
+
+review:
+  status: >-
+    self-assessed; automated mechanical checks (lake build with sorry
+    census; lake comparator from the pinned Lean v4.35.0 toolchain with
+    statement match and replay through Lean's kernel, NanoDa and con-ron);
+    no line-by-line human review of proof terms; no external mathematical
+    peer review
+  reviewers:
+    - "Rohan Badade (self)"
+  notes: >-
+    Checked mechanically: lake build with no sorry warnings and no errors;
+    #print axioms on every compared theorem (propext, Classical.choice,
+    Quot.sound); and lake comparator with comparator-fagin.json against
+    ChallengeFagin.lean, covering statement match, definition identity, the
+    axiom allowlist and kernel replay. Checked by a human: the choice of
+    statements and this file. Not done: line-by-line human reading of proof
+    terms; external mathematical review.
+
+alignment:
+  namespace: "FaginChallenge"
+  statements:
+    - source: "Number of labelled graphs (standard)"
+      lean: "FaginChallenge.card_simpleGraph"
+      module: "ChallengeFagin"
+      status: proved
+      note: "There are 2^(n choose 2) simple graphs on Fin n. Proved as Fagin.card_simpleGraph."
+    - source: "Extension axioms hold almost surely (Fagin 1976; Glebskii et al. 1969)"
+      lean: "FaginChallenge.extension_almost_sure"
+      module: "ChallengeFagin"
+      status: proved
+      note: "For each k, the proportion of graphs on n vertices with the k-extension property tends to 1. Proved as Fagin.extension_almost_sure."
+    - source: "The Rado graph has the extension property (Rado 1964)"
+      lean: "FaginChallenge.radoGraph_extension"
+      module: "ChallengeFagin"
+      status: proved
+      note: "Proved as Fagin.radoGraph_extension."
+    - source: "Uniqueness of the countable random graph (back and forth; see Cameron)"
+      lean: "FaginChallenge.nonempty_iso_of_extension"
+      module: "ChallengeFagin"
+      status: proved
+      note: "Any two countable graphs with every extension property are isomorphic. Proved as Fagin.nonempty_iso_of_extension."
+    - source: "The almost-sure theory of graphs is the theory of the Rado graph"
+      lean: "FaginChallenge.tendsto_one_of_rado"
+      module: "ChallengeFagin"
+      status: proved
+      note: "If the Rado graph satisfies phi, graphProb phi n -> 1. Proved as Fagin.tendsto_one_of_rado."
+    - source: "The almost-sure theory of graphs is the theory of the Rado graph"
+      lean: "FaginChallenge.tendsto_zero_of_not_rado"
+      module: "ChallengeFagin"
+      status: proved
+      note: "If the Rado graph does not satisfy phi, graphProb phi n -> 0. Proved as Fagin.tendsto_zero_of_not_rado."
+    - source: "Zero-one law (Glebskii–Kogan–Liogon'kii–Talanov 1969; Fagin 1976)"
+      lean: "FaginChallenge.zero_one_law"
+      module: "ChallengeFagin"
+      status: proved
+      note: "graphProb phi n tends to 0 or to 1. Proved as Fagin.zero_one_law."
+
+acknowledgements: >-
+  Mathlib and its community, and the Lean 4 toolchain and the Lean FRO, in
+  particular Mathlib's model theory (compactness, the Łoś–Vaught test, the
+  language of graphs). Claude, by Anthropic, designed the statements and
+  wrote the Lean proofs from the author's brief. The author conceived the
+  entry and takes responsibility for all claims.

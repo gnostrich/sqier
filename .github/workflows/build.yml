@@ -68,7 +68,7 @@ jobs:
       - name: Run lake comparator (classical axioms only; Lean, NanoDa and con-ron kernels)
         run: |
           prefix=$(lean --print-prefix)
-          for cfg in comparator.json; do
+          for cfg in comparator.json comparator-growth.json comparator-fagin.json; do
             echo "::group::lake comparator: $cfg"
             python3 - "$prefix" "$cfg" > "$RUNNER_TEMP/$cfg" <<'PY'
           import json, sys
