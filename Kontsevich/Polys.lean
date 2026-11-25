@@ -17,34 +17,36 @@ section Series
 variable (G H : TTGraph)
 
 /-- The vertex map from `H` into the series composition. -/
-def sR (y : H.V) : (G.series H).V :=
+def sR (y : H.V) : G.V ⊕ {v : H.V // v ≠ H.src} :=
   if h : y = H.src then Sum.inl G.tgt else Sum.inr ⟨y, h⟩
 
 /-- Projection of the series composition onto `G`. -/
-def sPG (w : (G.series H).V) : G.V := Sum.elim id (fun _ => G.tgt) w
+def sPG (w : G.V ⊕ {v : H.V // v ≠ H.src}) : G.V := Sum.elim id (fun _ => G.tgt) w
 
 /-- Projection of the series composition onto `H`. -/
-def sPH (w : (G.series H).V) : H.V := Sum.elim (fun _ => H.src) Subtype.val w
+def sPH (w : G.V ⊕ {v : H.V // v ≠ H.src}) : H.V := Sum.elim (fun _ => H.src) Subtype.val w
 
-theorem sR_src : sR G H H.src = Sum.inl G.tgt := by simp [sR]
+theorem sR_src : sR G H H.src = Sum.inl G.tgt := dite_eq_left rfl
 
 theorem sPG_inl (x : G.V) : sPG G H (Sum.inl x) = x := rfl
 
 theorem sPH_inl (x : G.V) : sPH G H (Sum.inl x) = H.src := rfl
 
 theorem sPG_sR (y : H.V) : sPG G H (sR G H y) = G.tgt := by
-  unfold sR; split_ifs <;> rfl
+  by_cases h : y = H.src
+  · rw [sR, dite_eq_left h]; rfl
+  · rw [sR, dite_eq_right h]; rfl
 
 theorem sPH_sR (y : H.V) : sPH G H (sR G H y) = y := by
-  unfold sR; split_ifs with h
-  · exact h.symm
-  · rfl
+  by_cases h : y = H.src
+  · rw [sR, dite_eq_left h]; exact h.symm
+  · rw [sR, dite_eq_right h]; rfl
 
-theorem series_cover (w : (G.series H).V) :
+theorem series_cover (w : G.V ⊕ {v : H.V // v ≠ H.src}) :
     (∃ x, w = Sum.inl x) ∨ ∃ y, w = sR G H y := by
   rcases w with x | ⟨y, hy⟩
   · exact Or.inl ⟨x, rfl⟩
-  · exact Or.inr ⟨y, by simp [sR, hy]⟩
+  · exact Or.inr ⟨y, by rw [sR, dite_eq_right hy]⟩
 
 theorem series_card :
     Fintype.card (G.series H).V + 1 = Fintype.card G.V + Fintype.card H.V := by
@@ -60,7 +62,8 @@ theorem series_card :
 
 variable {G H} (a : Finset G.E) (b : Finset H.E)
 
-theorem series_card_edges : (a.disjSum b : Finset (G.series H).E).card = a.card + b.card :=
+theorem series_card_edges :
+    Finset.card (α := (G.series H).E) (a.disjSum b) = a.card + b.card :=
   Finset.card_disjSum a b
 
 theorem series_push_G {x y : G.V} (h : Joined G.ends a x y) :

@@ -95,6 +95,15 @@ lemma psi_zero (a : (banana 0).toGraph.E → F) : psi 0 a = 1 :=
 lemma phi_zero (a : (banana 0).toGraph.E → F) : phi 0 a = a () :=
   (congrArg (aeval a) forest_edge).trans (aeval_X _ _)
 
+lemma aeval_kirchhoff_edge (b : SP.edge.toGraph.E → F) :
+    aeval b (kirchhoffPoly SP.edge.toGraph.ends) = 1 := by
+  rw [kirchhoff_edge', map_one]
+
+lemma aeval_forest_edge (b : SP.edge.toGraph.E → F) :
+    aeval b (forestPoly SP.edge.toGraph.ends SP.edge.toGraph.src SP.edge.toGraph.tgt) = b () := by
+  rw [forest_edge']
+  exact aeval_X b ()
+
 lemma aeval_kirchhoff_parallel (G H : TTGraph) (hG : G.src ≠ G.tgt) (hH : H.src ≠ H.tgt)
     (a : G.E ⊕ H.E → F) :
     aeval (σ := G.E ⊕ H.E) a (kirchhoffPoly (G.parallel H).ends) =
@@ -129,8 +138,7 @@ lemma psi_succ (n : ℕ) (a : (banana n).toGraph.E ⊕ SP.edge.toGraph.E → F) 
   have h := aeval_kirchhoff_parallel (banana n).toGraph SP.edge.toGraph (banana_src_ne_tgt n)
     edge_src_ne_tgt a
   refine h.trans ?_
-  rw [kirchhoff_edge', forest_edge', map_one, mul_one]
-  erw [aeval_X]
+  rw [aeval_kirchhoff_edge, aeval_forest_edge, mul_one]
   rfl
 
 lemma phi_succ (n : ℕ) (a : (banana n).toGraph.E ⊕ SP.edge.toGraph.E → F) :
@@ -138,8 +146,7 @@ lemma phi_succ (n : ℕ) (a : (banana n).toGraph.E ⊕ SP.edge.toGraph.E → F) 
   have h := aeval_forest_parallel (banana n).toGraph SP.edge.toGraph (banana_src_ne_tgt n)
     edge_src_ne_tgt a
   refine h.trans ?_
-  rw [forest_edge']
-  erw [aeval_X]
+  rw [aeval_forest_edge]
   rfl
 
 end BananaAux
