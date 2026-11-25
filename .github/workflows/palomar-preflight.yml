@@ -37,3 +37,14 @@ jobs:
       execution_profile: palomar-standard-v1
       options: '{"comparator_config_path":"comparator-growth.json","formalization_metadata_path":"growth/formalization.yaml","authorization_relationship":"I am a responsible author or maintainer"}'
 
+  # Third entry: point counts of graph hypersurfaces (Kontsevich's conjecture, series–parallel graphs).
+  palomar-preflight-kontsevich:
+    uses: PalomarRegistry/PalomarSubmission/.github/workflows/submission.yml@14aa8d6b3c2f14a8540605e37144560b9a00e7e7
+    with:
+      repository: ${{ github.repository }}
+      commit: ${{ github.sha }}
+      pipeline_commit: 14aa8d6b3c2f14a8540605e37144560b9a00e7e7
+      request_id: preflight003
+      mode: full
+      execution_profile: palomar-standard-v1
+      options: '{"comparator_config_path":"comparator-kontsevich.json","formalization_metadata_path":"kontsevich/formalization.yaml","authorization_relationship":"I am a responsible author or maintainer"}'

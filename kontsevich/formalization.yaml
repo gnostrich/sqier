@@ -1,0 +1,318 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+# formalization.yaml v0.4. Third Palomar entry from this repository (graph hypersurfaces).
+# Comparator configuration: comparator-kontsevich.json.
+version: "v0.4"
+
+project:
+  name: "Point counts of graph hypersurfaces: Kontsevich's polynomiality holds for every series–parallel graph, with the series–parallel rules for the graph and 2-forest polynomials and the exact counts for banana graphs and K4"
+  description: >-
+    The graph polynomial (Kirchhoff polynomial, first Symanzik polynomial)
+    of a finite multigraph is Psi = sum over spanning trees T of the product
+    of the edge variables alpha_e for e not in T. Its zero set, the graph
+    hypersurface, carries the Feynman periods of the graph, and Kontsevich
+    asked whether its number of points over a finite field with q elements
+    is always a polynomial in q. This is false in general (Belkale–Brosnan
+    2003; explicit counterexamples have 14 edges) but true for small graphs.
+    This entry proves in Lean 4 and Mathlib that it holds for every
+    series–parallel graph, together with the combinatorial rules behind it
+    and exact counts for two families. Seven statements are compared.
+
+    (1)-(4) Series and parallel rules. For two-terminal multigraphs, let Phi
+    be the 2-forest polynomial (sum over spanning 2-forests separating the
+    terminals of the product of the variables of the edges outside the
+    forest). Under series composition Psi = Psi1 Psi2 and
+    Phi = Phi1 Psi2 + Psi1 Phi2; under parallel composition
+    Psi = Psi1 Phi2 + Phi1 Psi2 and Phi = Phi1 Phi2, with the two edge sets
+    disjoint. (In the electrical reading, with alpha_e the resistance of
+    edge e, Phi/Psi is the effective resistance between the terminals.)
+    (5) For every series–parallel graph (built from single edges by series
+    and parallel composition) there is a single integer polynomial P such
+    that, for every finite field with q elements, the affine graph
+    hypersurface {a : Psi(a) = 0} has exactly P(q) points. (6) For the
+    banana graph with m parallel edges (Psi = e_(m-1)) the count is
+    q^m - (q-1)^m - m(q-1)^(m-1) + ((q-1)^m + (-1)^m (q-1))/q, stated
+    multiplied by q. (7) For K4, the smallest graph that is not
+    series–parallel, the count is q^2 (q^3 + q - 1).
+
+    The proof of (5) tracks four counts per graph: the points where Psi and
+    Phi both vanish, only Psi vanishes, only Phi vanishes, and neither
+    vanishes. Psi and Phi are homogeneous of consecutive degrees, so
+    scaling all variables by a nonzero constant scales the ratio Phi/Psi by
+    that constant; hence on the last set the ratio is equidistributed over
+    the nonzero field elements. With this the four counts of a series or
+    parallel composition are explicit polynomial functions of the counts of
+    the parts, and induction gives (5). The count (7) is proved by
+    eliminating one variable at a time, using that Psi is linear in each
+    variable.
+
+    The results are known in substance: polynomiality for series–parallel
+    graphs follows from Stembridge's reductions (1998) and is stated by
+    Brown and Schnetz (2012), citing Aluffi and Marcolli; the banana and K4
+    counts are classical. We did not find the (Psi, Phi) series–parallel
+    rules or the equidistribution argument stated in this form in the
+    literature. We searched Mathlib (source and pull requests), other Lean
+    repositories via GitHub code search, the Isabelle AFP, Coq/Rocq, HOL,
+    Agda, Mizar and the Palomar registry (November 2026) and found no
+    earlier formalization of graph hypersurfaces or of Kontsevich's
+    question; priority is nevertheless unknown.
+  authors:
+    - "Rohan Badade"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Rohan Badade"
+
+classification:
+  arxiv: ["math.CO", "math.AG"]
+  msc2020: ["05C31", "14G15", "81T18", "05C30"]
+
+sources:
+  - title: "Counting points on varieties over finite fields related to a conjecture of Kontsevich"
+    authors:
+      - "John R. Stembridge"
+    id: "doi:10.1007/BF01608531"
+    type: paper
+    location: "Annals of Combinatorics 2(4) (1998), 365-385; reductions for loops, parallel edges, cut vertices and 2-edge cuts (Section 2)"
+    relationship: independently-proves
+    license: "unknown"
+    author_endorsement: not-contacted
+    note: >-
+      Stembridge's reductions imply polynomiality for series–parallel graphs
+      (they are closed under the minors produced by the reductions). The
+      entry proves this independently, by a different route (the (Psi, Phi)
+      rules and the four-count recursion), and in the Kirchhoff convention
+      Psi = sum over trees of the product over edges outside the tree.
+  - title: "A K3 in phi^4"
+    authors:
+      - "Francis Brown"
+      - "Oliver Schnetz"
+    id: "doi:10.1215/00127094-1644201"
+    type: paper
+    location: "Duke Mathematical Journal 161(10) (2012), 1817-1862; Section 3.1 (series–parallel reductions; polynomial classes for series–parallel graphs); arXiv:1006.4064"
+    relationship: independently-proves
+    license: "unknown"
+    author_endorsement: not-contacted
+    note: >-
+      States that iterating the reductions gives polynomial formulae for
+      series–parallel graphs, result (5); also the source of the K4 count
+      in the wheel family and of the 14-edge counterexamples that the entry
+      does not treat.
+  - title: "Feynman motives and deletion-contraction relations"
+    authors:
+      - "Paolo Aluffi"
+      - "Matilde Marcolli"
+    id: "doi:10.1090/conm/538/10594"
+    type: paper
+    location: "Contemporary Mathematics 538 (2011), 21-64; Corollary 5.6 (banana graphs)"
+    relationship: independently-proves
+    license: "unknown"
+    author_endorsement: not-contacted
+    note: "The class of the banana graph hypersurface, result (6), proved independently here by counting."
+  - title: "Matroids, motives, and a conjecture of Kontsevich"
+    authors:
+      - "Prakash Belkale"
+      - "Patrick Brosnan"
+    id: "doi:10.1215/S0012-7094-03-11615-4"
+    type: paper
+    location: "Duke Mathematical Journal 116(1) (2003), 147-188"
+    relationship: background
+    license: "unknown"
+    author_endorsement: "n/a"
+    note: "Disproves Kontsevich's conjecture in general; context for the scope of result (5). Not formalized."
+  - title: "On motives associated to graph polynomials"
+    authors:
+      - "Spencer Bloch"
+      - "Hélène Esnault"
+      - "Dirk Kreimer"
+    id: "doi:10.1007/s00220-006-0040-2"
+    type: paper
+    location: "Communications in Mathematical Physics 267(1) (2006), 181-225"
+    relationship: background
+    license: "unknown"
+    author_endorsement: "n/a"
+    note: "Graph hypersurfaces, their motives and Feynman periods; background only, not formalized."
+  - title: "Ueber die Auflösung der Gleichungen, auf welche man bei der Untersuchung der linearen Vertheilung galvanischer Ströme geführt wird"
+    authors:
+      - "Gustav Kirchhoff"
+    id: "doi:10.1002/andp.18471481202"
+    type: paper
+    location: "Annalen der Physik und Chemie 72 (1847), 497-508"
+    relationship: background
+    license: "public domain"
+    author_endorsement: "n/a"
+    note: "Origin of the spanning-tree polynomial in electrical networks; background for the electrical reading of Phi/Psi."
+  - title: "mathlib4: the Lean mathematical library"
+    authors:
+      - "The Mathlib Community"
+    id: "https://github.com/leanprover-community/mathlib4"
+    type: other
+    location: "Mathlib v4.35.0, as pinned by lakefile.toml and lake-manifest.json"
+    relationship: background
+    license: "Apache-2.0"
+    author_endorsement: "n/a"
+    note: >-
+      The ambient library. ChallengeKontsevich.lean imports only Mathlib,
+      which supplies multivariate polynomials, finite fields and
+      reflexive-transitive closures; graph polynomials, spanning forests of
+      multigraphs and series–parallel graphs are developed here.
+
+related_formalizations:
+  - id: "PALOMAR-2026-10-16-000019"
+    relationship: other
+    note: >-
+      Kirchhoff's matrix-tree theorem (unweighted), a different statement
+      about spanning trees; this entry does not use determinants and shares
+      no code.
+
+status:
+  scope: >-
+    Formalized: exactly the seven statements listed in
+    comparator-kontsevich.json and stated in ChallengeKontsevich.lean, with
+    sorry-free proofs in Kontsevich/. All are unconditional apart from the
+    stated distinct-terminal hypotheses in (2)-(4).
+
+    Not claimed. Projective point counts (the affine and projective counts
+    determine each other for homogeneous Psi, but this is not stated);
+    Grothendieck classes or motives; graphs beyond series–parallel graphs
+    other than K4 (wheels, Delta–Y reducible graphs); the counterexamples
+    to Kontsevich's conjecture; the c2 invariant; Feynman periods. The
+    hypotheses G.src != G.tgt in forest_series and forest_parallel are not
+    all needed by the proofs but are kept as stated. The results are known
+    in substance (see sources); priority among formalizations is unknown.
+    Proof terms were not reviewed line by line by a human; see the review
+    block.
+
+    Sorry and native_decide. The development is sorry-free and
+    native_decide-free, and the compared theorems depend only on propext,
+    Classical.choice and Quot.sound. ChallengeKontsevich.lean's seven
+    deliberate sorries are the comparator placeholders and are not counted.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: agent
+      models: ["Claude (Anthropic)"]
+      framework: "Claude Code"
+      tool_setup: >-
+        From the author's direction, Claude (Anthropic) designed the
+        definitions and statements, derived the (Psi, Phi) rules and the
+        four-count recursion and checked them numerically (exhaustive counts
+        over F_2, F_3, F_5 against brute force, and the banana and K4 counts
+        against the literature), wrote ChallengeKontsevich.lean,
+        SolutionKontsevich.lean, comparator-kontsevich.json and this file,
+        and checked the statement surface with lake comparator against
+        sorried interfaces. Four parallel Claude agents wrote the proofs
+        (the series and parallel rules; the series–parallel count; the
+        banana count; the K4 count) by iterating against the Lean compiler.
+        Separate agents searched the literature and checked bibliographic
+        data.
+      cost:
+        wall_time: "about three hours"
+        spend_usd: "not tracked"
+        hardware: "cloud container, 4 cores"
+      prompting_notes: >-
+        Work was posed as written targets with fixed signatures, a short
+        mathematical route per agent, and the axiom budget (propext,
+        Quot.sound, Classical.choice only; no sorry, no native_decide).
+    - method: manual
+      models: []
+      framework: "n/a"
+      tool_setup: >-
+        The human author chose the direction (the bridge from graphs and
+        electrical networks to graph hypersurfaces and motives) and takes
+        responsibility for all claims.
+      cost:
+        wall_time: "not tracked"
+        spend_usd: "not tracked"
+        hardware: "not tracked"
+      prompting_notes: "n/a"
+  spend_usd: "not tracked"
+  notes: >-
+    Human direction; AI-designed statements and AI-written Lean proofs
+    (Claude). No human has reviewed the proof terms line by line. The trust
+    model is Lean's kernel plus the axiom audit and the comparator check
+    described under review.
+
+fidelity:
+  divergences: >-
+    Between the repository and ChallengeKontsevich.lean, which is what
+    Palomar compares: ChallengeKontsevich.lean imports only Mathlib and
+    contains verbatim copies of the definitions in Kontsevich/Defs.lean; the
+    statements are in the namespace KontsevichChallenge. There are no
+    individual statement deviations.
+
+    Against the sources: the graph polynomial is in Kontsevich's convention
+    (product over edges outside the tree), as in Belkale–Brosnan,
+    Aluffi–Marcolli and Brown–Schnetz; Stembridge uses the complementary
+    convention. Point counts are affine counts in F^E. Multigraphs may have
+    parallel edges and loops; spanning trees and 2-forests are defined by
+    edge counts and connectivity. Series–parallel graphs are the
+    two-terminal graphs generated from a single edge by series and parallel
+    composition (as an inductive type of terms), rather than defined by an
+    excluded minor. Polynomiality is stated as one integer polynomial valid
+    for all finite fields.
+
+review:
+  status: >-
+    self-assessed; automated mechanical checks (lake build with sorry
+    census; lake comparator from the pinned Lean v4.35.0 toolchain with
+    statement match and replay through Lean's kernel, NanoDa and con-ron);
+    no line-by-line human review of proof terms; no external mathematical
+    peer review
+  reviewers:
+    - "Rohan Badade (self)"
+  notes: >-
+    Checked mechanically: lake build with no sorry warnings and no errors;
+    #print axioms on every compared theorem (propext, Classical.choice,
+    Quot.sound); and lake comparator with comparator-kontsevich.json against
+    ChallengeKontsevich.lean, covering statement match, definition identity,
+    the axiom allowlist and kernel replay. Checked numerically before
+    formalization: the series and parallel count recursion against
+    exhaustive counts over F_2, F_3 and F_5 for small graphs, the banana
+    counts and the K4 counts (36, 261, 3225 at q = 2, 3, 5). Not done:
+    line-by-line human reading of proof terms; external mathematical review.
+
+alignment:
+  namespace: "KontsevichChallenge"
+  statements:
+    - source: "Series rule for the graph polynomial (spanning trees of a one-point union)"
+      lean: "KontsevichChallenge.kirchhoff_series"
+      module: "ChallengeKontsevich"
+      status: proved
+      note: "Psi(G ; H) = Psi(G) Psi(H). Proved as Kontsevich.kirchhoff_series."
+    - source: "Series rule for the 2-forest polynomial"
+      lean: "KontsevichChallenge.forest_series"
+      module: "ChallengeKontsevich"
+      status: proved
+      note: "Phi(G ; H) = Phi(G) Psi(H) + Psi(G) Phi(H). Proved as Kontsevich.forest_series."
+    - source: "Parallel rule for the graph polynomial"
+      lean: "KontsevichChallenge.kirchhoff_parallel"
+      module: "ChallengeKontsevich"
+      status: proved
+      note: "Psi(G || H) = Psi(G) Phi(H) + Phi(G) Psi(H). Proved as Kontsevich.kirchhoff_parallel."
+    - source: "Parallel rule for the 2-forest polynomial"
+      lean: "KontsevichChallenge.forest_parallel"
+      module: "ChallengeKontsevich"
+      status: proved
+      note: "Phi(G || H) = Phi(G) Phi(H). Proved as Kontsevich.forest_parallel."
+    - source: "Kontsevich's conjecture for series–parallel graphs (cf. Stembridge 1998; Brown–Schnetz 2012, Section 3.1)"
+      lean: "KontsevichChallenge.kontsevich_seriesParallel"
+      module: "ChallengeKontsevich"
+      status: proved
+      note: "One integer polynomial gives the affine point count over every finite field. Proved as Kontsevich.kontsevich_seriesParallel."
+    - source: "Banana graphs (Aluffi–Marcolli 2011, Corollary 5.6)"
+      lean: "KontsevichChallenge.banana_count"
+      module: "ChallengeKontsevich"
+      status: proved
+      note: "Exact affine count, multiplied by q. Proved as Kontsevich.banana_count."
+    - source: "K4 = the wheel with three spokes (Stembridge; Brown–Schnetz)"
+      lean: "KontsevichChallenge.k4_count"
+      module: "ChallengeKontsevich"
+      status: proved
+      note: "q^2 (q^3 + q - 1) points. Proved as Kontsevich.k4_count."
+
+acknowledgements: >-
+  Mathlib and its community, and the Lean 4 toolchain and the Lean FRO.
+  Claude, by Anthropic, designed the statements and wrote the Lean proofs.
+  The author directed the work and takes responsibility for all claims.

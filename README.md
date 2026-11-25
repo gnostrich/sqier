@@ -111,6 +111,24 @@ Proofs: `Squier/GrowthDefs.lean`, `Squier/Transfer.lean`, `Squier/Growth.lean`. 
 is by normal-form length; for length-reducing or shortlex complete systems this is the usual
 growth series, but the general geodesic statement is not claimed.
 
+## Third entry: point counts of graph hypersurfaces (`comparator-kontsevich.json`)
+
+[`ChallengeKontsevich.lean`](ChallengeKontsevich.lean) states seven theorems (namespace
+`KontsevichChallenge`); metadata in [`kontsevich/formalization.yaml`](kontsevich/formalization.yaml).
+The graph polynomial `Ψ = ∑_T ∏_{e ∉ T} α_e` (spanning trees `T`) defines the graph hypersurface,
+whose periods are Feynman amplitudes; Kontsevich asked whether its point count over `𝔽_q` is
+always a polynomial in `q` (false in general, Belkale–Brosnan).
+
+| Theorem | Statement |
+|---|---|
+| `kirchhoff_series`, `forest_series`, `kirchhoff_parallel`, `forest_parallel` | series/parallel rules for `Ψ` and the 2-forest polynomial `Φ` (`Φ/Ψ` = effective resistance) |
+| `kontsevich_seriesParallel` | for every series–parallel graph, one integer polynomial gives the point count over every finite field |
+| `banana_count` | exact count for `m` parallel edges |
+| `k4_count` | `K₄` (the smallest non-series–parallel graph): `q²(q³ + q − 1)` points |
+
+Proofs in `Kontsevich/`: the series–parallel count tracks four zero-pattern counts of `(Ψ, Φ)`;
+homogeneity makes the ratio `Φ/Ψ` equidistributed, so the counts compose polynomially.
+
 ## Supporting development, not submitted: Fagin's zero-one law (`comparator-fagin.json`)
 
 [`ChallengeFagin.lean`](ChallengeFagin.lean) states seven theorems (namespace `FaginChallenge`);
