@@ -54,12 +54,11 @@ theorem conGen_of_eqvGen {R : Finset (List α × List α)} {u v : List α}
     conGen (presentedRels R) (FreeMonoid.ofList u) (FreeMonoid.ofList v) := by
   induction h with
   | rel u v h =>
-    obtain ⟨s⟩ := h
-    rw [s.src_eq, s.tgt_eq]
+    obtain ⟨⟨pre, ρ, mem, suf, rfl, rfl⟩⟩ := h
     simp only [FreeMonoid.ofList_append]
     refine (conGen _).mul ((conGen _).mul ((conGen _).refl _) (ConGen.Rel.of _ _ ?_))
       ((conGen _).refl _)
-    simpa [presentedRels] using s.mem
+    simpa [presentedRels] using mem
   | refl u => exact (conGen _).refl _
   | symm u v _ ih => exact (conGen _).symm ih
   | trans u v w _ _ ih₁ ih₂ => exact (conGen _).trans ih₁ ih₂
@@ -220,8 +219,7 @@ theorem s3_growth (n : ℕ) : growth s3 n = [1, 2, 2, 1].getD n 0 := by
   | 2 => decide
   | 3 => decide
   | n + 4 =>
-    simp only [List.getD_eq_getElem?_getD, List.length_cons, List.length_nil,
-      List.getElem?_eq_none (by omega : 4 ≤ n + 4), Option.getD_none]
+    rw [show [1, 2, 2, 1].getD (n + 4) 0 = 0 from rfl]
     unfold avoidCount
     rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff]
     intro v _ h
@@ -264,7 +262,7 @@ theorem inversions_append (x y : List Bool) :
   | nil => simp [inversions]
   | cons b x ih =>
     simp only [List.cons_append, inversions, ih, List.count_append, List.count_cons]
-    cases b <;> simp <;> ring
+    cases b <;> simp; ring
 
 theorem inversions_lt {u v : List Bool} (s : Step comm2 u v) : inversions v < inversions u := by
   obtain ⟨pre, ρ, mem, suf, rfl, rfl⟩ := s
@@ -322,35 +320,40 @@ theorem avoid_replicate (i j : ℕ) :
     simp [List.pairwise_append, List.pairwise_replicate]
   intro hi
   have := hp.sublist hi.sublist
-  simp at this
+  simp only [List.pairwise_cons, List.mem_singleton, forall_eq, List.not_mem_nil,
+    IsEmpty.forall_iff, implies_true, List.Pairwise.nil, and_true] at this
+  exact absurd this (by decide)
+
+/-- The word `false ^ i true ^ (n - i)` as a vector of length `n`. -/
+def sortedWord (n : ℕ) (i : Fin (n + 1)) : List.Vector Bool n :=
+  ⟨List.replicate i false ++ List.replicate (n - i) true, by
+    simp only [List.length_append, List.length_replicate]; omega⟩
 
 theorem comm2_avoidCount (n : ℕ) : avoidCount {[true, false]} n = n + 1 := by
   unfold avoidCount
   have himg : (Finset.univ.filter fun w : List.Vector Bool n =>
       ∀ f ∈ ({[true, false]} : Finset (List Bool)), ¬ f <:+: w.toList) =
-      Finset.univ.image fun i : Fin (n + 1) =>
-        (⟨List.replicate i false ++ List.replicate (n - i) true, by
-          simp only [List.length_append, List.length_replicate]; omega⟩ : List.Vector Bool n) := by
+      Finset.univ.image (sortedWord n) := by
     ext v
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_singleton, forall_eq,
-      Finset.mem_image]
+    rw [Finset.mem_filter, Finset.mem_image]
+    simp only [Finset.mem_univ, true_and, Finset.mem_singleton, forall_eq]
     constructor
     · intro h
       obtain ⟨i, j, hij⟩ := eq_replicate_of_avoid v.toList h
       have hl := congrArg List.length hij
       simp only [List.Vector.toList_length, List.length_append, List.length_replicate] at hl
       refine ⟨⟨i, by omega⟩, Subtype.ext ?_⟩
-      change _ = v.toList
-      rw [hij]
-      congr 2
-      omega
+      change List.replicate i false ++ List.replicate (n - i) true = v.toList
+      rw [hij, show n - i = j by omega]
     · rintro ⟨i, rfl⟩
       exact avoid_replicate _ _
   rw [himg, Finset.card_image_of_injective, Finset.card_univ, Fintype.card_fin]
   intro i₁ i₂ h
   have := congrArg (fun v : List.Vector Bool n => v.toList.count false) h
-  simp [List.Vector.toList] at this
-  exact Fin.ext this
+  have h0 : ∀ k, (List.replicate k true).count false = 0 := fun k =>
+    List.count_eq_zero_of_not_mem (by simp [List.mem_replicate])
+  simp only [sortedWord, List.Vector.toList_mk, List.count_append, h0] at this
+  exact Fin.ext (by simpa using this)
 
 end GrowthAux
 

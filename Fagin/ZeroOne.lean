@@ -64,16 +64,16 @@ theorem realize_extSentence {M : Type*} [Language.graph.Structure M] [M ⊨ Theo
     Sum.elim_inl, TupleExt, simpleGraphOfStructure_adj]
   constructor
   · intro h a b hab
-    obtain ⟨w, h1, h2, h3, h4⟩ := h (Sum.elim a b) (fun st => hab st.1 st.2)
+    obtain ⟨w, ⟨⟨h1, h2⟩, h3⟩, h4⟩ := h (Sum.elim a b) (fun st => hab st.1 st.2)
     exact ⟨w (), h1, h2, h3, h4⟩
   · intro h x hx
     obtain ⟨z, h1, h2, h3, h4⟩ := h (fun s => x (Sum.inl s)) (fun t => x (Sum.inr t))
       (fun s t => hx (s, t))
-    exact ⟨fun _ => z, h1, h2, h3, h4⟩
+    exact ⟨fun _ => z, ⟨⟨h1, h2⟩, h3⟩, h4⟩
 
 theorem realize_extSentence_structure {V : Type*} (G : SimpleGraph V) (i j : ℕ) :
     @Sentence.Realize _ V G.structure (extSentence i j) ↔ TupleExt G i j := by
-  letI := G.structure
+  let _ := G.structure
   rw [realize_extSentence, SimpleGraph.simpleGraphOfStructure]
 
 theorem tupleExt_of_extensionProperty {V : Type*} {G : SimpleGraph V} {i j k : ℕ}
@@ -101,7 +101,8 @@ theorem extensionProperty_of_tupleExt {V : Type*} {G : SimpleGraph V}
   have ha : ∀ x (hx : x ∈ A), a (A.equivFin ⟨x, hx⟩) = x := fun x hx => by simp [a]
   have hb : ∀ x (hx : x ∈ B), b (B.equivFin ⟨x, hx⟩) = x := fun x hx => by simp [b]
   obtain ⟨z, h1, h2, h3, h4⟩ := h A.card B.card a b (fun s t hst =>
-    Finset.disjoint_left.1 hAB (A.equivFin.symm s).2 (hst ▸ (B.equivFin.symm t).2))
+    Finset.disjoint_left.1 hAB (A.equivFin.symm s).2 (by
+      change a s ∈ B; rw [hst]; exact (B.equivFin.symm t).2))
   refine ⟨z, fun hz => h1 _ (ha z hz).symm, fun hz => h2 _ (hb z hz).symm,
     fun x hx => ha x hx ▸ h3 _, fun x hx => hb x hx ▸ h4 _⟩
 
@@ -118,23 +119,23 @@ def extTheory : Language.graph.Theory :=
 
 theorem model_extTheory_iff {V : Type*} (G : SimpleGraph V) :
     @Theory.Model _ V G.structure extTheory ↔ ∀ k, ExtensionProperty G k := by
-  letI := G.structure
+  let _ := G.structure
   rw [forall_extensionProperty_iff, extTheory, Theory.model_union_iff]
   simp only [simpleGraph_model G, true_and, Theory.model_iff, Set.forall_mem_range,
     realize_extSentence_structure, Prod.forall]
 
 theorem extensionProperty_of_model {M : Type*} [Language.graph.Structure M] [h : M ⊨ extTheory]
     (k : ℕ) :
-    haveI : M ⊨ Theory.simpleGraph := Theory.Model.mono h Set.subset_union_left
+    have : M ⊨ Theory.simpleGraph := Theory.Model.mono h Set.subset_union_left
     ExtensionProperty (simpleGraphOfStructure M) k := by
-  haveI : M ⊨ Theory.simpleGraph := Theory.Model.mono h Set.subset_union_left
+  have : M ⊨ Theory.simpleGraph := Theory.Model.mono h Set.subset_union_left
   have := (model_extTheory_iff (simpleGraphOfStructure M)).1
     (by rw [structure_simpleGraphOfStructure]; exact h)
   exact this k
 
 theorem infinite_of_model {M : Type*} [Language.graph.Structure M] [M ⊨ extTheory] :
     Infinite M := by
-  haveI : M ⊨ Theory.simpleGraph := Theory.Model.mono ‹_› Set.subset_union_left
+  have : M ⊨ Theory.simpleGraph := Theory.Model.mono ‹_› Set.subset_union_left
   by_contra hM
   rw [not_infinite_iff_finite] at hM
   have := Fintype.ofFinite M
@@ -168,8 +169,8 @@ theorem extTheory_categorical : (ℵ₀ : Cardinal.{0}).Categorical extTheory :=
   intro M N hM hN
   have : Countable M := Cardinal.mk_le_aleph0_iff.1 hM.le
   have : Countable N := Cardinal.mk_le_aleph0_iff.1 hN.le
-  haveI : M ⊨ Theory.simpleGraph := Theory.Model.mono M.is_model Set.subset_union_left
-  haveI : N ⊨ Theory.simpleGraph := Theory.Model.mono N.is_model Set.subset_union_left
+  have : M ⊨ Theory.simpleGraph := Theory.Model.mono M.is_model Set.subset_union_left
+  have : N ⊨ Theory.simpleGraph := Theory.Model.mono N.is_model Set.subset_union_left
   obtain ⟨f⟩ := nonempty_iso_of_extension (simpleGraphOfStructure M) (simpleGraphOfStructure N)
     (extensionProperty_of_model (M := M)) (extensionProperty_of_model (M := N))
   exact ⟨equivOfIso f⟩
@@ -179,7 +180,10 @@ theorem rado_model : @Theory.Model _ ℕ radoGraph.structure extTheory :=
 
 theorem extTheory_isComplete : extTheory.IsComplete :=
   extTheory_categorical.isComplete ℵ₀ extTheory le_rfl
-    (by simpa [Language.card] using Cardinal.mk_le_aleph0)
+    (by
+      show Cardinal.lift #Language.graph.Symbols ≤ _
+      rw [Cardinal.lift_id, Cardinal.lift_id]
+      exact Cardinal.mk_le_aleph0)
     ⟨@Theory.ModelType.of _ extTheory ℕ radoGraph.structure rado_model _⟩
     (fun M => infinite_of_model (M := M))
 
@@ -203,7 +207,7 @@ theorem exists_bound (T0 : Finset Language.graph.Sentence) (hT0 : (T0 : Language
   · right
     have h' : ∃ p : ℕ × ℕ, extSentence p.1 p.2 = ψ := h
     have hle : f ψ ≤ T0.sup f := Finset.le_sup hψ
-    simp only [f, dif_pos h'] at hle
+    simp only [f, h', ↓reduceDIte] at hle
     exact ⟨_, _, hle, h'.choose_spec.symm⟩
 
 theorem exists_extensionProperty_realize {φ : Language.graph.Sentence} (hφ : extTheory ⊨ᵇ φ) :
@@ -212,10 +216,10 @@ theorem exists_extensionProperty_realize {φ : Language.graph.Sentence} (hφ : e
   obtain ⟨T0, hsub, hT0⟩ := Theory.models_iff_finset_models.1 hφ
   obtain ⟨K, hK⟩ := exists_bound T0 hsub
   refine ⟨K, fun V G hG => ?_⟩
-  letI := G.structure
+  let _ := G.structure
   obtain ⟨z, -⟩ := hG ∅ ∅ (Finset.disjoint_empty_left _) (by simp)
-  haveI : Nonempty V := ⟨z⟩
-  haveI : V ⊨ (T0 : Language.graph.Theory) := by
+  have : Nonempty V := ⟨z⟩
+  have : V ⊨ (T0 : Language.graph.Theory) := by
     rw [Theory.model_iff]
     intro ψ hψ
     rcases hK ψ hψ with h | ⟨i, j, hij, rfl⟩
@@ -228,11 +232,12 @@ theorem exists_extensionProperty_realize {φ : Language.graph.Sentence} (hφ : e
 
 theorem graphProb_le_one (φ : Language.graph.Sentence) (n : ℕ) : graphProb φ n ≤ 1 := by
   unfold graphProb
-  rw [div_le_one (by positivity), ← card_simpleGraph]
-  exact_mod_cast Nat.card_subtype_le _
+  rw [div_le_one (by positivity)]
+  exact_mod_cast (Finite.card_subtype_le _).trans (card_simpleGraph n).le
 
 theorem graphProb_not (φ : Language.graph.Sentence) (n : ℕ) :
     graphProb φ.not n = 1 - graphProb φ n := by
+  classical
   unfold graphProb
   have hc : Nat.card {G : SimpleGraph (Fin n) //
         @Sentence.Realize Language.graph (Fin n) G.structure φ.not} =
@@ -256,7 +261,7 @@ theorem tendsto_one_of_rado (φ : Language.graph.Sentence)
   unfold graphProb
   gcongr
   exact Nat.card_le_card_of_injective (fun G => ⟨G.1, hK _ G.1 G.2⟩)
-    (fun G H h => Subtype.ext (congrArg Subtype.val h))
+    (fun G H h => by simp only [Subtype.mk.injEq] at h; exact Subtype.ext h)
 
 /-- If the Rado graph does not satisfy `φ`, then almost no finite graph satisfies `φ`. -/
 theorem tendsto_zero_of_not_rado (φ : Language.graph.Sentence)
