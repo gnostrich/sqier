@@ -279,10 +279,10 @@ theorem cnt_ne_eq {F : Type} [Field F] {g : α → F} {R : α → Prop} {A B n :
 
 theorem cnt_ne'_eq {F : Type} [Field F] {g : α → F} {B n : ℤ}
     (hB : cnt (fun y => g y = 0) = B) (hn : (Fintype.card α : ℤ) - B = n) :
-    cnt (fun y => g y ≠ 0) = n :=
-  cnt_congr_eq (fun y => (and_true _).symm)
-    (cnt_ne_eq (R := fun _ => True) (cnt_univ_eq rfl)
-      (cnt_congr_eq (fun y => and_true _) hB) hn)
+    cnt (fun y => g y ≠ 0) = n := by
+  have := cnt_ne_eq (g := g) (R := fun _ => True) (cnt_univ_eq rfl)
+    (cnt_congr_eq (fun y => by simp) hB) hn
+  exact cnt_congr_eq (fun y => by simp) this
 
 variable {F : Type} [Field F] [Fintype F]
 
@@ -368,7 +368,8 @@ theorem cV3c4 :
   cnt_lin'_eq (fun w => w.1 + w.2.1) (fun w => w.2.1 * (w.1 + w.2.1))
     (fun x y => by constructor <;> intro h <;> linear_combination h)
     (cnt_congr_eq (fun w => ⟨fun h => h.1, fun h => ⟨h, by rw [h, mul_zero]⟩⟩) cV2)
-    (cnt_ne'_eq cV2 (by push_cast [Fintype.card_prod, Fintype.card_unit]; ring)) (by ring)
+    (cnt_ne'_eq (n := q ^ 2 - q) cV2 (by push_cast [Fintype.card_prod, Fintype.card_unit]; ring))
+    (by ring)
 
 /-! #### Counts in the four variables `b c d e` -/
 
@@ -427,8 +428,13 @@ theorem c5 :
 theorem cg :
     cnt (fun y : F × F × F × F × F × Unit =>
       gK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1 = 0) = q ^ 4 :=
-  cnt_lin'_eq (fun z => sS z.1 z.2.1 z.2.2.1 z.2.2.2.1) (fun z => sP z.1 z.2.1 z.2.2.1 z.2.2.2.1)
-    (fun _ _ => Iff.rfl) c2 c1ne (by ring)
+  by
+  refine cnt_lin'_eq (A := q ^ 2) (B := q ^ 4 - q ^ 3) (fun z => sS z.1 z.2.1 z.2.2.1 z.2.2.2.1)
+    (fun z => sP z.1 z.2.1 z.2.2.1 z.2.2.2.1) ?_ ?_ ?_ ?_
+  · intro x y; exact Iff.rfl
+  · exact c2
+  · exact c1ne
+  · ring
 
 theorem cgne :
     cnt (fun y : F × F × F × F × F × Unit =>
@@ -438,22 +444,22 @@ theorem cgne :
 theorem cgh :
     cnt (fun y : F × F × F × F × F × Unit =>
       gK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1 = 0 ∧
-        hK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1 = 0) = q ^ 3 + q ^ 2 - q :=
-  cnt_split_eq _ (fun y => sS y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1 = 0)
-    (cnt_lin_eq (fun z => sH1 z.1 z.2.1 z.2.2.1 z.2.2.2.1)
+        hK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1 = 0) = q ^ 3 + q ^ 2 - q := by
+  refine cnt_split_eq _ (fun y => sS y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1 = 0)
+    (A := 2 * q ^ 2 - q) (B := q ^ 3 - q ^ 2) ?_ ?_ (by ring)
+  · refine cnt_lin_eq (A := q) (B := q ^ 2 - q) (fun z => sH1 z.1 z.2.1 z.2.2.1 z.2.2.2.1)
       (fun z => sH0 z.1 z.2.1 z.2.2.1 z.2.2.2.1)
       (fun z => sS z.1 z.2.1 z.2.2.1 z.2.2.2.1 = 0 ∧ sP z.1 z.2.1 z.2.2.1 z.2.2.2.1 = 0)
-      (fun x y => alg_B x y.1 y.2.1 y.2.2.1 y.2.2.2.1) c5
-      (cnt_ne_eq c2 c6 rfl) rfl)
-    (cnt_lin_eq (fun z => sS z.1 z.2.1 z.2.2.1 z.2.2.2.1)
+      (fun x y => alg_B x y.1 y.2.1 y.2.2.1 y.2.2.2.1) c5 ?_ (by ring)
+    exact cnt_ne_eq c2 c6 (by ring)
+  · refine cnt_lin_eq (A := 0) (B := q ^ 3 - q ^ 2) (fun z => sS z.1 z.2.1 z.2.2.1 z.2.2.2.1)
       (fun z => sP z.1 z.2.1 z.2.2.1 z.2.2.2.1)
       (fun z => sD z.1 z.2.1 z.2.2.1 z.2.2.2.1 = 0 ∧ sS z.1 z.2.1 z.2.2.1 z.2.2.2.1 ≠ 0)
       (fun x y => alg_A x y.1 y.2.1 y.2.2.1 y.2.2.2.1)
-      (cnt_false (fun z h => h.2.2.2 h.1))
-      (cnt_congr_eq (fun z => ⟨fun h => ⟨h.1, h.2.1⟩, fun h => ⟨h.1, h.2, h.1⟩⟩)
-        (cnt_ne_eq (R := fun z : F × F × F × F × Unit => sD z.1 z.2.1 z.2.2.1 z.2.2.2.1 = 0)
-          c3 c4 rfl)) rfl)
-    (by ring)
+      (cnt_false (fun z h => h.2.2.2 h.1)) ?_ (by ring)
+    exact cnt_congr_eq (fun z => ⟨fun h => ⟨h.1, h.2.1⟩, fun h => ⟨h.1, h.2, h.1⟩⟩)
+      (cnt_ne_eq (R := fun z : F × F × F × F × Unit => sD z.1 z.2.1 z.2.2.1 z.2.2.2.1 = 0)
+        c3 c4 (by ring))
 
 /-! #### The six variables -/
 
@@ -461,9 +467,11 @@ theorem cfinal :
     cnt (fun p : F × F × F × F × F × F × Unit =>
       p.1 * gK p.2.1 p.2.2.1 p.2.2.2.1 p.2.2.2.2.1 p.2.2.2.2.2.1 +
         hK p.2.1 p.2.2.1 p.2.2.2.1 p.2.2.2.2.1 p.2.2.2.2.2.1 = 0) = q ^ 5 + q ^ 3 - q ^ 2 :=
-  cnt_lin'_eq (fun y => gK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1)
-    (fun y => hK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1) (fun _ _ => Iff.rfl) cgh cgne
-    (by ring)
+  by
+  refine cnt_lin'_eq (A := q ^ 3 + q ^ 2 - q) (B := q ^ 5 - q ^ 4)
+    (fun y => gK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1)
+    (fun y => hK y.1 y.2.1 y.2.2.1 y.2.2.2.1 y.2.2.2.2.1) (fun _ _ => Iff.rfl) cgh cgne ?_
+  ring
 
 /-- Reordering the coordinates as `(a, f, b, c, d, e)`. -/
 def k4Equiv : (Fin 6 → F) ≃ F × F × F × F × F × F × Unit where
