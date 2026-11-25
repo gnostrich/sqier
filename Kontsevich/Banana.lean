@@ -20,7 +20,7 @@ lemma edge_src_ne_tgt : TTGraph.edge.src ≠ TTGraph.edge.tgt := by
 lemma kirchhoff_edge : kirchhoffPoly TTGraph.edge.ends = 1 := by
   unfold kirchhoffPoly
   rw [Finset.sum_filter, Fintype.sum_eq_single (Finset.univ : Finset TTGraph.edge.E)]
-  · rw [if_pos]
+  · rw [ite_eq_left]
     · simp
     · refine ⟨rfl, fun u v => ?_⟩
       change Bool at u v
@@ -30,7 +30,7 @@ lemma kirchhoff_edge : kirchhoffPoly TTGraph.edge.ends = 1 := by
       · exact Relation.ReflTransGen.single ⟨(), Finset.mem_univ _, Or.inr rfl⟩
       · exact Relation.ReflTransGen.refl
   · intro T hT
-    rw [if_neg]
+    rw [ite_eq_right]
     rintro ⟨h, -⟩
     apply hT
     apply Finset.eq_univ_of_card
@@ -44,7 +44,7 @@ lemma forest_edge :
     forestPoly TTGraph.edge.ends TTGraph.edge.src TTGraph.edge.tgt = X (R := ℤ) (σ := TTGraph.edge.E) () := by
   unfold forestPoly
   rw [Finset.sum_filter, Fintype.sum_eq_single (∅ : Finset TTGraph.edge.E)]
-  · rw [if_pos]
+  · rw [ite_eq_left]
     · rw [Finset.compl_empty]
       exact Finset.prod_singleton (fun x => (X x : MvPolynomial TTGraph.edge.E ℤ)) ()
     · refine ⟨rfl, fun v => ?_, ?_⟩
@@ -57,7 +57,7 @@ lemma forest_edge :
         · exact absurd h (by decide)
         · simp at he
   · intro T hT
-    rw [if_neg]
+    rw [ite_eq_right]
     rintro ⟨h, -⟩
     apply hT
     have h2 : Fintype.card TTGraph.edge.V = 2 := rfl
@@ -79,7 +79,7 @@ lemma banana_src_ne_tgt (n : ℕ) : (banana n).toGraph.src ≠ (banana n).toGrap
     intro h
     exact ih (Sum.inl_injective h)
 
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {F : Type} [Field F]
 
 /-- Evaluation of the Kirchhoff polynomial of the banana graph. -/
 noncomputable def psi (n : ℕ) (a : (banana n).toGraph.E → F) : F :=
@@ -151,9 +151,13 @@ lemma phi_succ (n : ℕ) (a : (banana n).toGraph.E ⊕ SP.edge.toGraph.E → F) 
 
 /-! ### Counting in one variable -/
 
+variable [Fintype F] [DecidableEq F]
+
+omit [Field F] in
 lemma sum_eq_ind (c : F) : ∑ x : F, (if x = c then (1 : ℤ) else 0) = 1 := by
   simp
 
+omit [Field F] in
 lemma sum_ne_ind (c : F) :
     ∑ x : F, (if x = c then (0 : ℤ) else 1) = (Fintype.card F : ℤ) - 1 := by
   have h : ∀ x : F, (if x = c then (0 : ℤ) else 1) = 1 - if x = c then 1 else 0 := by
@@ -175,6 +179,7 @@ lemma sum_ne2_ind (c : F) (hc : c ≠ 0) :
   simp
   ring
 
+omit [Fintype F] [DecidableEq F] in
 lemma lin_iff {u v x : F} (hu : u ≠ 0) : u * x + v = 0 ↔ x = -v / u := by
   rw [eq_div_iff hu]
   constructor <;> intro h <;> linear_combination h
@@ -194,7 +199,7 @@ lemma fibA (u v : F) :
       · subst h2
         simp at h1
         exact hv h1
-    rw [Finset.sum_eq_zero (fun x _ => if_neg (h x))]
+    rw [Finset.sum_eq_zero (fun x _ => ite_eq_right (h x))]
     simp [hu, hv]
 
 lemma fibB (u v : F) :
@@ -261,6 +266,7 @@ def splitEquiv (n : ℕ) : ((banana (n + 1)).toGraph.E → F) ≃ ((banana n).to
     rcases i with i | ⟨⟩ <;> rfl
   right_inv p := rfl
 
+omit [DecidableEq F] in
 lemma sum_succ (n : ℕ) (g : F → F → ℤ) :
     ∑ a : (banana (n + 1)).toGraph.E → F, g (psi (n + 1) a) (phi (n + 1) a) =
       ∑ b : (banana n).toGraph.E → F, ∑ x : F, g (psi n b * x + phi n b) (phi n b * x) := by
@@ -278,6 +284,7 @@ def zeroEquiv : ((banana 0).toGraph.E → F) ≃ F where
     rfl
   right_inv x := rfl
 
+omit [DecidableEq F] in
 lemma sum_zero (g : F → F → ℤ) :
     ∑ a : (banana 0).toGraph.E → F, g (psi 0 a) (phi 0 a) = ∑ x : F, g 1 x := by
   refine Fintype.sum_equiv zeroEquiv _ _ (fun a => ?_)

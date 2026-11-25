@@ -126,6 +126,75 @@ theorem series_tree_iff :
     intro u v
     exact (key u).symm'.trans' (key v)
 
+theorem series_forest_iff :
+    IsSeparatingForest (G.series H).ends (G.series H).src (G.series H).tgt (a.disjSum b) ↔
+      (IsSeparatingForest G.ends G.src G.tgt a ∧ IsSpanningTree H.ends b) ∨
+        (IsSpanningTree G.ends a ∧ IsSeparatingForest H.ends H.src H.tgt b) := by
+  have hc := series_card G H
+  have he := series_card_edges (H := H) a b
+  have ht : (G.series H).tgt = sR G H H.tgt := rfl
+  have hs : (G.series H).src = Sum.inl G.src := rfl
+  have htG : sPG G H (sR G H H.tgt) = G.tgt := sPG_sR G H _
+  have hsH : sPH G H (Sum.inl G.src) = H.src := rfl
+  have hm := sR_src G H
+  rw [ht, hs]
+  unfold IsSeparatingForest IsSpanningTree
+  constructor
+  · rintro ⟨hcS, hcov, hst⟩
+    have hGcov : ∀ x, Joined G.ends a G.src x ∨ Joined G.ends a G.tgt x := fun x => by
+      rcases hcov (Sum.inl x) with h | h
+      · exact Or.inl (by simpa [sPG_inl] using series_proj_G a b h)
+      · exact Or.inr (by simpa [sPG_inl, htG] using series_proj_G a b h)
+    have hHcov : ∀ y, Joined H.ends b H.src y ∨ Joined H.ends b H.tgt y := fun y => by
+      rcases hcov (sR G H y) with h | h
+      · exact Or.inl (by simpa [sPH_sR, hsH] using series_proj_H a b h)
+      · exact Or.inr (by simpa [sPH_sR] using series_proj_H a b h)
+    rcases hcov (Sum.inl G.tgt) with h | h
+    · -- the middle vertex lies on the side of the first terminal
+      have hGst : Joined G.ends a G.src G.tgt := by
+        simpa [sPG_inl] using series_proj_G a b h
+      have hHst : ¬ Joined H.ends b H.src H.tgt := fun h' => by
+        have := series_push_H a b h'
+        rw [hm] at this
+        exact hst (h.trans' this)
+      have hGc : ∀ x, Joined G.ends a G.src x := fun x =>
+        (hGcov x).elim id (fun h' => hGst.trans' h')
+      have h1 := card_le_one_of_conn _ hGc
+      have h2 := card_le_two_of_conn _ _ hHcov
+      right
+      exact ⟨⟨by omega, fun u v => (hGc u).symm'.trans' (hGc v)⟩, by omega, hHcov, hHst⟩
+    · have hHst : Joined H.ends b H.src H.tgt := by
+        rw [← hm] at h
+        simpa [sPH_sR] using (series_proj_H a b h).symm'
+      have hGst : ¬ Joined G.ends a G.src G.tgt := fun h' => by
+        exact hst ((series_push_G a b h').trans' h.symm')
+      have hHc : ∀ y, Joined H.ends b H.src y := fun y =>
+        (hHcov y).elim id (fun h' => hHst.trans' h')
+      have h1 := card_le_two_of_conn _ _ hGcov
+      have h2 := card_le_one_of_conn _ hHc
+      left
+      exact ⟨⟨by omega, hGcov, hGst⟩, by omega, fun u v => (hHc u).symm'.trans' (hHc v)⟩
+  · rintro (⟨⟨hca, hGcov, hGst⟩, ⟨hcb, hHc⟩⟩ | ⟨⟨hca, hGc⟩, ⟨hcb, hHcov, hHst⟩⟩)
+    · refine ⟨by omega, fun w => ?_, fun h => hGst ?_⟩
+      · have hmt : Joined (G.series H).ends (a.disjSum b) (sR G H H.tgt) (Sum.inl G.tgt) := by
+          have := series_push_H a b (hHc H.tgt H.src)
+          rwa [hm] at this
+        rcases series_cover G H w with ⟨x, rfl⟩ | ⟨y, rfl⟩
+        · rcases hGcov x with h | h
+          · exact Or.inl (series_push_G a b h)
+          · exact Or.inr (hmt.trans' (series_push_G a b h))
+        · exact Or.inr (series_push_H a b (hHc _ _))
+      · simpa [sPG_inl, htG] using series_proj_G a b h
+    · refine ⟨by omega, fun w => ?_, fun h => hHst ?_⟩
+      · rcases series_cover G H w with ⟨x, rfl⟩ | ⟨y, rfl⟩
+        · exact Or.inl (series_push_G a b (hGc _ _))
+        · rcases hHcov y with h | h
+          · have := series_push_H a b h
+            rw [hm] at this
+            exact Or.inl ((series_push_G a b (hGc _ _)).trans' this)
+          · exact Or.inr (series_push_H a b h)
+      · simpa [sPH_sR, hsH] using series_proj_H a b h
+
 end Series
 
 /-- Series composition multiplies graph polynomials. -/
@@ -133,14 +202,15 @@ theorem kirchhoff_series (G H : TTGraph) :
     kirchhoffPoly (G.series H).ends =
       rename Sum.inl (kirchhoffPoly G.ends) * rename Sum.inr (kirchhoffPoly H.ends) := by
   rw [kirchhoffPoly_eq, kirchhoffPoly_eq, kirchhoffPoly_eq]
-  exact (sum_split _ _ series_tree_iff).trans (sum_prod _ _).symm
+  exact sum_split_prod _ _ _ series_tree_iff
 
 /-- The 2-forest polynomial of a series composition. -/
 theorem forest_series (G H : TTGraph) (hG : G.src ≠ G.tgt) (hH : H.src ≠ H.tgt) :
     forestPoly (G.series H).ends (G.series H).src (G.series H).tgt =
       rename Sum.inl (forestPoly G.ends G.src G.tgt) * rename Sum.inr (kirchhoffPoly H.ends) +
         rename Sum.inl (kirchhoffPoly G.ends) * rename Sum.inr (forestPoly H.ends H.src H.tgt) := by
-  sorry
+  rw [forestPoly_eq, forestPoly_eq, forestPoly_eq, kirchhoffPoly_eq, kirchhoffPoly_eq]
+  exact sum_split_prod₂ _ _ _ _ _ (fun _ h => h.1.2.2 (h.2.2 _ _)) series_forest_iff
 
 /-- The graph polynomial of a parallel composition. -/
 theorem kirchhoff_parallel (G H : TTGraph) (hG : G.src ≠ G.tgt) (hH : H.src ≠ H.tgt) :

@@ -285,6 +285,29 @@ theorem sum_prod₂ (P₁ P₃ : Finset A → Prop) (P₂ P₄ : Finset B → Pr
   by_cases h₁ : P₁ a <;> by_cases h₂ : P₂ b <;> by_cases h₃ : P₃ a <;> by_cases h₄ : P₄ b <;>
     simp_all
 
+open Classical in
+theorem sum_split_prod (P : Finset (A ⊕ B) → Prop) (P₁ : Finset A → Prop) (P₂ : Finset B → Prop)
+    (h : ∀ a b, P (a.disjSum b) ↔ P₁ a ∧ P₂ b) :
+    (∑ S, if P S then mon S else 0) =
+      rename Sum.inl (∑ a, if P₁ a then mon a else 0) *
+        rename (R := ℤ) Sum.inr (∑ b, if P₂ b then mon b else 0) := by
+  rw [sum_split P _ h, sum_prod]
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
+  congr 1
+
+open Classical in
+theorem sum_split_prod₂ (P : Finset (A ⊕ B) → Prop) (P₁ P₃ : Finset A → Prop)
+    (P₂ P₄ : Finset B → Prop) (hdisj : ∀ a, ¬ (P₁ a ∧ P₃ a))
+    (h : ∀ a b, P (a.disjSum b) ↔ (P₁ a ∧ P₂ b) ∨ (P₃ a ∧ P₄ b)) :
+    (∑ S, if P S then mon S else 0) =
+      rename Sum.inl (∑ a, if P₁ a then mon a else 0) *
+        rename (R := ℤ) Sum.inr (∑ b, if P₂ b then mon b else 0) +
+      rename Sum.inl (∑ a, if P₃ a then mon a else 0) *
+        rename (R := ℤ) Sum.inr (∑ b, if P₄ b then mon b else 0) := by
+  rw [sum_split P _ h, sum_prod₂ _ _ _ _ hdisj]
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
+  congr 1
+
 end Sums
 
 end Kontsevich
