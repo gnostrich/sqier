@@ -93,6 +93,36 @@ parallel paths, finite derivation type would hold trivially; it does not.
 | `Squier/Main.lean` | Squier's theorem: normal-form paths, noetherian induction, the homotopy basis; finite derivation type |
 | `Squier/S3Aux.lean`, `Squier/S3.lean` | The `S₃` example: non-degeneracy invariant, termination, enumeration of the ten critical branchings, the explicit basis |
 
+## Second entry: growth series are rational (`comparator-growth.json`)
+
+[`ChallengeGrowth.lean`](ChallengeGrowth.lean) states seven theorems (namespace
+`SquierGrowthChallenge`); metadata in [`growth/formalization.yaml`](growth/formalization.yaml).
+
+| Theorem | Statement |
+|---|---|
+| `avoidCount_rational` | words avoiding a finite set of factors have a rational generating function (transfer matrix + Cayley–Hamilton) |
+| `unique_normalForm` | for a terminating, confluent system, each element of Mathlib's `PresentedMonoid` has exactly one normal form |
+| `growth_eq_avoidCount` | elements with a normal form of length `n` ↔ words of length `n` avoiding every left-hand side |
+| `growth_rational` | hence the growth series (by normal-form length) is rational |
+| `s3_growth`, `s3_card` | `S₃`: series `1 + 2z + 2z² + z³`, six elements |
+| `comm2_growth` | `ba → ab`: `n + 1` elements of length `n`, series `1/(1-z)²` |
+
+Proofs: `Squier/GrowthDefs.lean`, `Squier/Transfer.lean`, `Squier/Growth.lean`. The growth series
+is by normal-form length; for length-reducing or shortlex complete systems this is the usual
+growth series, but the general geodesic statement is not claimed.
+
+## Third entry: Fagin's zero-one law (`comparator-fagin.json`)
+
+[`ChallengeFagin.lean`](ChallengeFagin.lean) states seven theorems (namespace `FaginChallenge`);
+metadata in [`fagin/formalization.yaml`](fagin/formalization.yaml). For a first-order sentence
+`φ` about graphs, the probability that `G(n, 1/2)` satisfies `φ` tends to `1` if the Rado graph
+satisfies `φ` and to `0` otherwise; along the way: `2^(n choose 2)` graphs, extension properties
+hold almost surely, the Rado graph has them, and countable graphs with them are isomorphic.
+Proofs in `Fagin/`. **Prior work:** the Lean 4 project
+[cslib-frontier](https://github.com/cslib-community/cslib-frontier) proved this earlier and more
+generally (constant `p`, relational vocabularies); this is an independent Mathlib-only proof of
+the graph case with `p = 1/2`.
+
 ## Building
 
 ```

@@ -37,7 +37,12 @@ project:
     satisfies phi, then T proves phi, and by Mathlib's compactness theorem
     finitely many extension properties already force phi; (2) then gives
     probability tending to 1. Otherwise T proves the negation of phi. The
-    results are classical. SEARCHSENTENCE
+    results are classical, and this is not their first formalization: the
+    Lean 4 project cslib-frontier (November 2026, built on CSLib) proves the
+    zero-one law, including for constant edge probabilities p and for finite
+    relational vocabularies, and TauCeti proves the Rado graph part. The
+    present development is independent of both, depends only on Mathlib, and
+    covers only graphs with p = 1/2.
   authors:
     - "Rohan Badade"
   license: "Apache-2.0"
@@ -52,9 +57,9 @@ sources:
   - title: "Probabilities on finite models"
     authors:
       - "Ronald Fagin"
-    id: "FAGINID"
+    id: "doi:10.2307/2272945"
     type: paper
-    location: "FAGINLOC"
+    location: "Journal of Symbolic Logic 41(1) (1976), 50-58"
     relationship: formalizes
     license: "unknown"
     author_endorsement: not-contacted
@@ -70,9 +75,9 @@ sources:
       - "D. I. Kogan"
       - "M. I. Liogon'kii"
       - "V. A. Talanov"
-    id: "GKLTID"
+    id: "doi:10.1007/BF01071084"
     type: paper
-    location: "GKLTLOC"
+    location: "Kibernetika (Kiev) 1969, no. 2, 17-28; English translation Cybernetics 5(2), 142-154"
     relationship: formalizes
     license: "unknown"
     author_endorsement: "n/a"
@@ -80,9 +85,9 @@ sources:
   - title: "Universal graphs and universal functions"
     authors:
       - "Richard Rado"
-    id: "RADOID"
+    id: "doi:10.4064/aa-9-4-331-340"
     type: paper
-    location: "RADOLOC"
+    location: "Acta Arithmetica 9(4) (1964), 331-340"
     relationship: background
     license: "unknown"
     author_endorsement: "n/a"
@@ -92,7 +97,7 @@ sources:
       - "Peter J. Cameron"
     id: "arXiv:1301.7544"
     type: survey
-    location: "CAMERONLOC"
+    location: "In The Mathematics of Paul Erdős II, 2nd ed., Springer, 2013, 353-378, doi:10.1007/978-1-4614-7254-4_22"
     relationship: background
     license: "unknown"
     author_endorsement: not-contacted
@@ -113,7 +118,24 @@ sources:
       graphs and their isomorphisms, and real limits. Mathlib has no
       extension axioms, Rado graph or zero-one law; these are developed here.
 
-related_formalizations: []
+related_formalizations:
+  - id: "https://github.com/cslib-community/cslib-frontier"
+    relationship: independent
+    note: >-
+      An earlier and more general Lean 4 formalization (merged November 2026,
+      built on CSLib): CslibFrontier/Logics/FirstOrder/ZeroOneLaw.lean proves
+      the zero-one law for G(n, 1/2), the identification of the almost-sure
+      theory with the theory of the Rado graph, versions for constant edge
+      probabilities p and for finite relational vocabularies, and
+      Kolaitis–Vardi's law for finite-variable infinitary logic. The present
+      entry is an independent, Mathlib-only proof of the graph case with
+      p = 1/2 only. No code is shared.
+  - id: "https://github.com/TauCetiProject/TauCeti"
+    relationship: independent
+    note: >-
+      Proves that the Rado graph has the extension property and that the
+      countable random graph is unique up to isomorphism (results of the
+      kind of (3)-(4)). No code is shared.
 
 status:
   scope: >-
@@ -126,8 +148,9 @@ status:
     form); decidability of the limit (the theory is complete and
     recursively axiomatized, but computability is not stated); monadic
     second-order or other logics; rates of convergence beyond those implicit
-    in the proof. The results are classical; priority among formalizations
-    is unknown. Proof terms were not reviewed line by line by a human; see
+    in the proof. The results are classical and were formalized earlier,
+    in greater generality, in cslib-frontier (see related_formalizations);
+    no priority is claimed. Proof terms were not reviewed line by line by a human; see
     the review block.
 
     Sorry and native_decide. The development is sorry-free and

@@ -40,7 +40,11 @@ project:
     respect to the generators; in general the two may differ, and the
     general geodesic growth series is not claimed. The results are classical
     (transfer-matrix method; Anick 1986 for complete rewriting systems).
-    SEARCHSENTENCE
+    We searched Mathlib (source and pull requests), CSLib and other Lean
+    repositories via GitHub code search, the Isabelle AFP, Coq/Rocq, HOL4,
+    HOL Light, Agda, Mizar and the Palomar registry (November 2026) and found
+    no earlier formalization of either rationality theorem; priority is
+    nevertheless unknown.
   authors:
     - "Rohan Badade"
   license: "Apache-2.0"
@@ -55,9 +59,9 @@ sources:
   - title: "On the homology of associative algebras"
     authors:
       - "David J. Anick"
-    id: "ANICKID"
+    id: "doi:10.1090/S0002-9947-1986-0846601-5"
     type: paper
-    location: "ANICKLOC"
+    location: "Transactions of the American Mathematical Society 296(2) (1986), 641-659"
     relationship: background
     license: "unknown"
     author_endorsement: "n/a"
@@ -69,9 +73,9 @@ sources:
   - title: "Enumerative Combinatorics, Volume 1 (second edition)"
     authors:
       - "Richard P. Stanley"
-    id: "STANLEYID"
+    id: "doi:10.1017/CBO9781139058520"
     type: book
-    location: "STANLEYLOC"
+    location: "Cambridge Studies in Advanced Mathematics 49, Cambridge University Press, 2012; Section 4.7, The Transfer-Matrix Method"
     relationship: formalizes
     license: "unknown"
     author_endorsement: "n/a"
@@ -94,6 +98,17 @@ sources:
       Background on complete rewriting systems and unique normal forms; the
       rewriting definitions (steps, termination, confluence) are shared with
       the Squier entry from this repository.
+  - title: "Analytic Combinatorics"
+    authors:
+      - "Philippe Flajolet"
+      - "Robert Sedgewick"
+    id: "doi:10.1017/CBO9780511801655"
+    type: book
+    location: "Cambridge University Press, 2009; Section I.4 (words and regular languages), Section V.6 (transfer matrix models)"
+    relationship: background
+    license: "unknown"
+    author_endorsement: "n/a"
+    note: "Words avoiding patterns, regular languages and transfer matrices have rational generating functions; standard background for result (1)."
   - title: "mathlib4: the Lean mathematical library"
     authors:
       - "The Mathlib Community"
@@ -117,13 +132,20 @@ related_formalizations:
       directly. This entry proves the general rationality theorem for monoids
       with a finite complete rewriting system (with respect to normal-form
       length) and does not reuse it.
-  - id: "PALOMARSQUIERID"
+  - id: "https://github.com/rwst/lean-code"
+    relationship: independent
+    note: >-
+      The file unsorted/gf-cyc.lean (Lean 4) proves that the trace
+      generating function of a matrix, sum of tr(M^k) X^k, is rational. That
+      is related to the transfer-matrix step here, but it does not count
+      words, forbidden factors or monoid elements. No code is shared.
+  - id: "https://github.com/gnostrich/sqier"
     relationship: builds-on
     note: >-
       The Squier entry from this repository (Squier's theorem on finite
-      derivation type). This entry reuses its definitions of rewriting
-      steps, termination and confluence, and its critical pair lemma and S3
-      system in the proofs of the examples.
+      derivation type, comparator.json). This entry reuses its definitions
+      of rewriting steps, termination and confluence, and its critical pair
+      lemma and S3 system in the proofs of the examples.
 
 status:
   scope: >-
