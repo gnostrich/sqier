@@ -149,6 +149,231 @@ lemma phi_succ (n : ℕ) (a : (banana n).toGraph.E ⊕ SP.edge.toGraph.E → F) 
   rw [aeval_forest_edge]
   rfl
 
+/-! ### Counting in one variable -/
+
+lemma sum_eq_ind (c : F) : ∑ x : F, (if x = c then (1 : ℤ) else 0) = 1 := by
+  simp
+
+lemma sum_ne_ind (c : F) :
+    ∑ x : F, (if x = c then (0 : ℤ) else 1) = (Fintype.card F : ℤ) - 1 := by
+  have h : ∀ x : F, (if x = c then (0 : ℤ) else 1) = 1 - if x = c then 1 else 0 := by
+    intro x
+    by_cases hx : x = c <;> simp [hx]
+  simp only [h, Finset.sum_sub_distrib, sum_eq_ind]
+  simp
+
+lemma sum_ne2_ind (c : F) (hc : c ≠ 0) :
+    ∑ x : F, (if ¬x = 0 ∧ ¬x = c then (1 : ℤ) else 0) = (Fintype.card F : ℤ) - 2 := by
+  have h : ∀ x : F, (if ¬x = 0 ∧ ¬x = c then (1 : ℤ) else 0) =
+      1 - (if x = 0 then 1 else 0) - if x = c then 1 else 0 := by
+    intro x
+    by_cases h0 : x = 0
+    · subst h0
+      simp [hc.symm]
+    · by_cases hx : x = c <;> simp [h0, hx, hc]
+  simp only [h, Finset.sum_sub_distrib, sum_eq_ind]
+  simp
+  ring
+
+lemma lin_iff {u v x : F} (hu : u ≠ 0) : u * x + v = 0 ↔ x = -v / u := by
+  rw [eq_div_iff hu]
+  constructor <;> intro h <;> linear_combination h
+
+lemma fibA (u v : F) :
+    ∑ x : F, (if u * x + v = 0 ∧ v * x = 0 then (1 : ℤ) else 0) =
+      (Fintype.card F : ℤ) * (if u = 0 ∧ v = 0 then 1 else 0) +
+        (if ¬u = 0 ∧ v = 0 then 1 else 0) := by
+  rcases eq_or_ne u 0 with rfl | hu <;> rcases eq_or_ne v 0 with rfl | hv
+  · simp
+  · simp [hv]
+  · simp [hu]
+  · have h : ∀ x : F, ¬(u * x + v = 0 ∧ v * x = 0) := by
+      rintro x ⟨h1, h2⟩
+      rcases mul_eq_zero.mp h2 with h2 | h2
+      · exact hv h2
+      · subst h2
+        simp at h1
+        exact hv h1
+    rw [Finset.sum_eq_zero (fun x _ => if_neg (h x))]
+    simp [hu, hv]
+
+lemma fibB (u v : F) :
+    ∑ x : F, (if u * x + v = 0 ∧ ¬v * x = 0 then (1 : ℤ) else 0) =
+      (if ¬u = 0 ∧ ¬v = 0 then 1 else 0) := by
+  rcases eq_or_ne u 0 with rfl | hu <;> rcases eq_or_ne v 0 with rfl | hv
+  · simp
+  · simp [hv]
+  · simp
+  · have h : ∀ x : F, (u * x + v = 0 ∧ ¬v * x = 0) ↔ x = -v / u := by
+      intro x
+      rw [lin_iff hu]
+      constructor
+      · exact fun h => h.1
+      · rintro rfl
+        refine ⟨rfl, ?_⟩
+        simp [hu, hv]
+    simp only [h]
+    simp [hu, hv]
+
+lemma fibC (u v : F) :
+    ∑ x : F, (if ¬u * x + v = 0 ∧ v * x = 0 then (1 : ℤ) else 0) =
+      (if u = 0 ∧ ¬v = 0 then 1 else 0) +
+        ((Fintype.card F : ℤ) - 1) * (if ¬u = 0 ∧ v = 0 then 1 else 0) +
+        (if ¬u = 0 ∧ ¬v = 0 then 1 else 0) := by
+  rcases eq_or_ne u 0 with rfl | hu <;> rcases eq_or_ne v 0 with rfl | hv
+  · simp
+  · simp [hv]
+  · simp [hu, sum_ne_ind]
+  · have h : ∀ x : F, (¬u * x + v = 0 ∧ v * x = 0) ↔ x = 0 := by
+      intro x
+      constructor
+      · rintro ⟨-, h2⟩
+        exact (mul_eq_zero.mp h2).resolve_left hv
+      · rintro rfl
+        simp [hv]
+    simp only [h]
+    simp [hu, hv]
+
+lemma fibD (u v : F) :
+    ∑ x : F, (if ¬u * x + v = 0 ∧ ¬v * x = 0 then (1 : ℤ) else 0) =
+      ((Fintype.card F : ℤ) - 1) * (if u = 0 ∧ ¬v = 0 then 1 else 0) +
+        ((Fintype.card F : ℤ) - 2) * (if ¬u = 0 ∧ ¬v = 0 then 1 else 0) := by
+  rcases eq_or_ne u 0 with rfl | hu <;> rcases eq_or_ne v 0 with rfl | hv
+  · simp
+  · simp [hv, sum_ne_ind]
+  · simp
+  · have h : ∀ x : F, (¬u * x + v = 0 ∧ ¬v * x = 0) ↔ (¬x = 0 ∧ ¬x = -v / u) := by
+      intro x
+      rw [lin_iff hu, mul_eq_zero, not_or]
+      tauto
+    simp only [h]
+    rw [sum_ne2_ind _ (by simp [hu, hv])]
+    simp [hu, hv]
+
+/-! ### Counting points of the banana graphs -/
+
+/-- Splitting off the last edge of `banana (n + 1)`. -/
+def splitEquiv (n : ℕ) : ((banana (n + 1)).toGraph.E → F) ≃ ((banana n).toGraph.E → F) × F where
+  toFun a := (fun e => a (Sum.inl e), a (Sum.inr ()))
+  invFun p := Sum.elim p.1 (fun _ => p.2)
+  left_inv a := by
+    funext i
+    rcases i with i | ⟨⟩ <;> rfl
+  right_inv p := rfl
+
+lemma sum_succ (n : ℕ) (g : F → F → ℤ) :
+    ∑ a : (banana (n + 1)).toGraph.E → F, g (psi (n + 1) a) (phi (n + 1) a) =
+      ∑ b : (banana n).toGraph.E → F, ∑ x : F, g (psi n b * x + phi n b) (phi n b * x) := by
+  rw [← Fintype.sum_prod_type']
+  refine Fintype.sum_equiv (splitEquiv n) _ _ (fun a => ?_)
+  rw [psi_succ, phi_succ]
+  rfl
+
+/-- The edge-variable map of `banana 0`. -/
+def zeroEquiv : ((banana 0).toGraph.E → F) ≃ F where
+  toFun a := a ()
+  invFun x := fun _ => x
+  left_inv a := by
+    funext i
+    rcases i with ⟨⟩
+    rfl
+  right_inv x := rfl
+
+lemma sum_zero (g : F → F → ℤ) :
+    ∑ a : (banana 0).toGraph.E → F, g (psi 0 a) (phi 0 a) = ∑ x : F, g 1 x := by
+  refine Fintype.sum_equiv zeroEquiv _ _ (fun a => ?_)
+  rw [psi_zero, phi_zero]
+  rfl
+
+variable (F) in
+/-- Points where both polynomials vanish. -/
+noncomputable def cA (n : ℕ) : ℤ :=
+  ∑ a : (banana n).toGraph.E → F, if psi n a = 0 ∧ phi n a = 0 then 1 else 0
+
+variable (F) in
+/-- Points where only the Kirchhoff polynomial vanishes. -/
+noncomputable def cB (n : ℕ) : ℤ :=
+  ∑ a : (banana n).toGraph.E → F, if psi n a = 0 ∧ ¬phi n a = 0 then 1 else 0
+
+variable (F) in
+/-- Points where only the forest polynomial vanishes. -/
+noncomputable def cC (n : ℕ) : ℤ :=
+  ∑ a : (banana n).toGraph.E → F, if ¬psi n a = 0 ∧ phi n a = 0 then 1 else 0
+
+variable (F) in
+/-- Points where neither polynomial vanishes. -/
+noncomputable def cD (n : ℕ) : ℤ :=
+  ∑ a : (banana n).toGraph.E → F, if ¬psi n a = 0 ∧ ¬phi n a = 0 then 1 else 0
+
+lemma cA_zero : cA F 0 = 0 := by
+  rw [cA, sum_zero (fun u v => if u = 0 ∧ v = 0 then (1 : ℤ) else 0)]
+  simp
+
+lemma cB_zero : cB F 0 = 0 := by
+  rw [cB, sum_zero (fun u v => if u = 0 ∧ ¬v = 0 then (1 : ℤ) else 0)]
+  simp
+
+lemma cC_zero : cC F 0 = 1 := by
+  rw [cC, sum_zero (fun u v => if ¬u = 0 ∧ v = 0 then (1 : ℤ) else 0)]
+  simp
+
+lemma cD_zero : cD F 0 = (Fintype.card F : ℤ) - 1 := by
+  rw [cD, sum_zero (fun u v => if ¬u = 0 ∧ ¬v = 0 then (1 : ℤ) else 0)]
+  simp [sum_ne_ind]
+
+lemma cA_succ (n : ℕ) : cA F (n + 1) = (Fintype.card F : ℤ) * cA F n + cC F n := by
+  rw [cA, sum_succ n (fun u v => if u = 0 ∧ v = 0 then (1 : ℤ) else 0)]
+  simp only [fibA, Finset.sum_add_distrib, ← Finset.mul_sum]
+  rfl
+
+lemma cB_succ (n : ℕ) : cB F (n + 1) = cD F n := by
+  rw [cB, sum_succ n (fun u v => if u = 0 ∧ ¬v = 0 then (1 : ℤ) else 0)]
+  simp only [fibB]
+  rfl
+
+lemma cC_succ (n : ℕ) :
+    cC F (n + 1) = cB F n + ((Fintype.card F : ℤ) - 1) * cC F n + cD F n := by
+  rw [cC, sum_succ n (fun u v => if ¬u = 0 ∧ v = 0 then (1 : ℤ) else 0)]
+  simp only [fibC, Finset.sum_add_distrib, ← Finset.mul_sum]
+  rfl
+
+lemma cD_succ (n : ℕ) :
+    cD F (n + 1) = ((Fintype.card F : ℤ) - 1) * cB F n + ((Fintype.card F : ℤ) - 2) * cD F n := by
+  rw [cD, sum_succ n (fun u v => if ¬u = 0 ∧ ¬v = 0 then (1 : ℤ) else 0)]
+  simp only [fibD, Finset.sum_add_distrib, ← Finset.mul_sum]
+  rfl
+
+lemma closed (n : ℕ) :
+    cA F n = (Fintype.card F : ℤ) ^ (n + 1) - ((Fintype.card F : ℤ) - 1) ^ (n + 1) -
+        ((n : ℤ) + 1) * ((Fintype.card F : ℤ) - 1) ^ n ∧
+      (Fintype.card F : ℤ) * cB F n =
+        ((Fintype.card F : ℤ) - 1) ^ (n + 1) + (-1) ^ (n + 1) * ((Fintype.card F : ℤ) - 1) ∧
+      cC F n = ((n : ℤ) + 1) * ((Fintype.card F : ℤ) - 1) ^ n ∧
+      cB F n + cD F n = ((Fintype.card F : ℤ) - 1) ^ (n + 1) := by
+  induction n with
+  | zero =>
+    rw [cA_zero, cB_zero, cC_zero, cD_zero]
+    refine ⟨by ring, by ring, by ring, by ring⟩
+  | succ n ih =>
+    obtain ⟨hA, hB, hC, hBD⟩ := ih
+    rw [cA_succ, cB_succ, cC_succ, cD_succ]
+    push_cast
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · linear_combination (Fintype.card F : ℤ) * hA + hC
+    · linear_combination (Fintype.card F : ℤ) * hBD - hB
+    · linear_combination hBD + ((Fintype.card F : ℤ) - 1) * hC
+    · linear_combination ((Fintype.card F : ℤ) - 1) * hBD
+
+lemma pointCount_eq (n : ℕ) :
+    (pointCount (banana n).toGraph.ends F : ℤ) = cA F n + cB F n := by
+  rw [pointCount, Nat.card_eq_fintype_card, Fintype.card_subtype, Finset.natCast_card_filter,
+    cA, cB, ← Finset.sum_add_distrib]
+  refine Finset.sum_congr rfl (fun a _ => ?_)
+  change (if psi n a = 0 then (1 : ℤ) else 0) = _
+  by_cases h1 : psi n a = 0 <;> by_cases h2 : phi n a = 0 <;> simp [h1, h2]
+
 end BananaAux
+
+open BananaAux in
 
 end Kontsevich

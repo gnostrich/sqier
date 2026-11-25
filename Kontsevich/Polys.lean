@@ -132,7 +132,8 @@ end Series
 theorem kirchhoff_series (G H : TTGraph) :
     kirchhoffPoly (G.series H).ends =
       rename Sum.inl (kirchhoffPoly G.ends) * rename Sum.inr (kirchhoffPoly H.ends) := by
-  sorry
+  rw [kirchhoffPoly_eq, kirchhoffPoly_eq, kirchhoffPoly_eq]
+  exact (sum_split _ _ series_tree_iff).trans (sum_prod _ _).symm
 
 /-- The 2-forest polynomial of a series composition. -/
 theorem forest_series (G H : TTGraph) (hG : G.src ≠ G.tgt) (hH : H.src ≠ H.tgt) :

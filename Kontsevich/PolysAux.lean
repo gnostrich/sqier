@@ -250,6 +250,41 @@ theorem forestPoly_eq {V E : Type} [Fintype V] [DecidableEq V] [Fintype E] [Deci
   rw [forestPoly, Finset.sum_filter]
   rfl
 
+open Classical in
+theorem sum_split (P : Finset (A ⊕ B) → Prop) (Q : Finset A → Finset B → Prop)
+    (hPQ : ∀ a b, P (a.disjSum b) ↔ Q a b) :
+    (∑ S, if P S then mon S else 0) =
+      ∑ a, ∑ b, if Q a b then rename Sum.inl (mon a) * rename Sum.inr (mon b) else 0 := by
+  rw [sum_finset_sum]
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
+  simp only [hPQ, mon_disjSum]
+
+open Classical in
+theorem sum_prod (P₁ : Finset A → Prop) (P₂ : Finset B → Prop) :
+    rename Sum.inl (∑ a, if P₁ a then mon a else 0) *
+        rename (R := ℤ) Sum.inr (∑ b, if P₂ b then mon b else 0) =
+      ∑ a, ∑ b, if P₁ a ∧ P₂ b then rename Sum.inl (mon a) * rename Sum.inr (mon b) else 0 := by
+  rw [map_sum, map_sum, Finset.sum_mul_sum]
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
+  by_cases h₁ : P₁ a <;> by_cases h₂ : P₂ b <;> simp [h₁, h₂]
+
+open Classical in
+theorem sum_prod₂ (P₁ P₃ : Finset A → Prop) (P₂ P₄ : Finset B → Prop)
+    (hdisj : ∀ a, ¬ (P₁ a ∧ P₃ a)) :
+    rename Sum.inl (∑ a, if P₁ a then mon a else 0) *
+        rename (R := ℤ) Sum.inr (∑ b, if P₂ b then mon b else 0) +
+      rename Sum.inl (∑ a, if P₃ a then mon a else 0) *
+        rename (R := ℤ) Sum.inr (∑ b, if P₄ b then mon b else 0) =
+      ∑ a, ∑ b, if (P₁ a ∧ P₂ b) ∨ (P₃ a ∧ P₄ b) then
+        rename Sum.inl (mon a) * rename Sum.inr (mon b) else 0 := by
+  rw [sum_prod, sum_prod, ← Finset.sum_add_distrib]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  rw [← Finset.sum_add_distrib]
+  refine Finset.sum_congr rfl fun b _ => ?_
+  have := hdisj a
+  by_cases h₁ : P₁ a <;> by_cases h₂ : P₂ b <;> by_cases h₃ : P₃ a <;> by_cases h₄ : P₄ b <;>
+    simp_all
+
 end Sums
 
 end Kontsevich

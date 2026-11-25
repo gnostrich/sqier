@@ -51,12 +51,14 @@ def Good {X : Type} (f : X → F × F) (N Z A C d : ℤ) : Prop :=
   (Nat.card X : ℤ) = N ∧ cnt f pZ = Z ∧ cnt f pA = A ∧ cnt f (pR 0) = C ∧
     ∀ r : F, r ≠ 0 → cnt f (pR r) = d
 
+omit [Field F] in
 theorem cnt_eq_sum {X : Type} [Fintype X] (f : X → F × F) (P : F × F → Prop)
     [DecidablePred P] : cnt f P = ∑ x, if P (f x) then (1 : ℤ) else 0 := by
   rw [cnt, Nat.card_eq_fintype_card, Fintype.card_subtype, Finset.card_filter]
   push_cast
   rfl
 
+omit [Field F] in
 theorem cnt_congr {X : Type} (f : X → F × F) {P Q : F × F → Prop} (h : ∀ u, P u ↔ Q u) :
     cnt f P = cnt f Q := by
   have : P = Q := funext fun u => propext (h u)
@@ -102,7 +104,7 @@ theorem conv_sum [Fintype F] [DecidableEq F] (C₁ d₁ C₂ d₂ : ℤ) (a b : 
     · subst h0
       have : ¬ r = 0 := fun h => hr h.symm
       have : ¬ (0 : F) = r := hr
-      simp [*]
+      simp [*]; ring
     · subst hr; simp [h0]; ring
     · have : ¬ r - s = 0 := fun h => hr (sub_eq_zero.mp h).symm
       simp [h0, hr, this]
@@ -141,19 +143,19 @@ theorem good_ser {X Y : Type} [Finite X] [Finite Y] {f : X → F × F} {g : Y �
     set v := g y
     by_cases hu : u.1 = 0
     · have : ¬ pR r (ser u v) := by simp [pR, ser, hu]
-      rw [if_neg this]
+      rw [ite_eq_right this]
       refine (Finset.sum_eq_zero fun s _ => ?_).symm
       have : ¬ pR s u := by simp [pR, hu]
-      rw [if_neg this, zero_mul]
+      rw [ite_eq_right this, zero_mul]
     by_cases hv : v.1 = 0
     · have : ¬ pR r (ser u v) := by simp [pR, ser, hv]
-      rw [if_neg this]
+      rw [ite_eq_right this]
       refine (Finset.sum_eq_zero fun s _ => ?_).symm
       have : ¬ pR (r - s) v := by simp [pR, hv]
-      rw [if_neg this, mul_zero]
+      rw [ite_eq_right this, mul_zero]
     rw [Finset.sum_eq_single (u.2 / u.1)]
     · have h1 : pR (u.2 / u.1) u := ⟨hu, (div_mul_cancel₀ _ hu).symm⟩
-      rw [if_pos h1, one_mul]
+      rw [ite_eq_left h1, one_mul]
       have e1 : pR (r - u.2 / u.1) v ↔ pR r (ser u v) := by
         simp only [pR, ser, ne_eq, mul_eq_zero, hu, hv, or_self, not_false_eq_true,
           true_and]
@@ -161,17 +163,18 @@ theorem good_ser {X Y : Type} [Finite X] [Finite Y] {f : X → F × F} {g : Y �
         · intro h; rw [h]; field_simp; ring
         · intro h; field_simp; linear_combination h
       by_cases h : pR r (ser u v)
-      · rw [if_pos h, if_pos (e1.mpr h)]
-      · rw [if_neg h, if_neg (fun h' => h (e1.mp h'))]
+      · rw [ite_eq_left h, ite_eq_left (e1.mpr h)]
+      · rw [ite_eq_right h, ite_eq_right (fun h' => h (e1.mp h'))]
     · intro s _ hs
       have : ¬ pR s u := by
         rintro ⟨-, h⟩
         exact hs (by rw [h, mul_div_cancel_right₀ _ hu])
-      rw [if_neg this, zero_mul]
+      rw [ite_eq_right this, zero_mul]
     · intro h; exact absurd (Finset.mem_univ _) h
-  have hcR : ∀ {W : Type} (h : W → F × F) (C d : ℤ), cnt h (pR 0) = C → (∀ r : F, r ≠ 0 → cnt h (pR r) = d)
+  have hcR : ∀ {W : Type} (h : W → F × F) (C d : ℤ), cnt h (pR 0) = C →
+      (∀ r : F, r ≠ 0 → cnt h (pR r) = d)
       → ∀ s, cnt h (pR s) = if s = 0 then C else d := by
-    intro h C d hC hd s
+    intro W h C d hC hd s
     split_ifs with hs
     · rw [hs, hC]
     · exact hd s hs
@@ -189,10 +192,11 @@ theorem good_ser {X Y : Type} [Finite X] [Finite Y] {f : X → F × F} {g : Y �
     by_cases ha : (f p.1).1 = 0 <;> by_cases hb : (g p.2).1 = 0 <;>
       by_cases hc : (f p.1).2 = 0 <;> by_cases he : (g p.2).2 = 0 <;>
       simp [pZ, pA, ser, ha, hb, hc, he]
-  · rw [hR, conv_sum C₁ d₁ C₂ d₂ _ _ (hcR f C₁ d₁ hC₁ hd₁) (hcR g C₂ d₂ hC₂ hd₂), if_pos rfl]
+  · rw [hR, conv_sum C₁ d₁ C₂ d₂ _ _ (hcR f C₁ d₁ hC₁ hd₁) (hcR g C₂ d₂ hC₂ hd₂), ite_eq_left rfl]
   · intro r hr
-    rw [hR, conv_sum C₁ d₁ C₂ d₂ _ _ (hcR f C₁ d₁ hC₁ hd₁) (hcR g C₂ d₂ hC₂ hd₂), if_neg hr]
+    rw [hR, conv_sum C₁ d₁ C₂ d₂ _ _ (hcR f C₁ d₁ hC₁ hd₁) (hcR g C₂ d₂ hC₂ hd₂), ite_eq_right hr]
 
+omit [Fintype F] in
 theorem good_sw {X : Type} [Finite X] {f : X → F × F} {N Z A C d : ℤ}
     (h : Good f N Z A C d) : Good (fun x => sw (f x)) N (A + C) A (Z - A) d := by
   classical
@@ -231,35 +235,48 @@ section Graphs
 noncomputable def prof (G : TTGraph) (F : Type) [Field F] (a : G.E → F) : F × F :=
   (aeval a (kirchhoffPoly G.ends), aeval a (forestPoly G.ends G.src G.tgt))
 
+theorem aeval_mul_rename {σ₁ σ₂ F : Type} [Field F] (a : σ₁ ⊕ σ₂ → F)
+    (p : MvPolynomial σ₁ ℤ) (q : MvPolynomial σ₂ ℤ) :
+    aeval a (rename Sum.inl p * rename Sum.inr q) =
+      aeval (a ∘ Sum.inl) p * aeval (a ∘ Sum.inr) q := by
+  rw [map_mul, aeval_rename, aeval_rename]
+
+theorem aeval_add_mul_rename {σ₁ σ₂ F : Type} [Field F] (a : σ₁ ⊕ σ₂ → F)
+    (p p' : MvPolynomial σ₁ ℤ) (q q' : MvPolynomial σ₂ ℤ) :
+    aeval a (rename Sum.inl p * rename Sum.inr q + rename Sum.inl p' * rename Sum.inr q') =
+      aeval (a ∘ Sum.inl) p * aeval (a ∘ Sum.inr) q +
+        aeval (a ∘ Sum.inl) p' * aeval (a ∘ Sum.inr) q' := by
+  rw [map_add, aeval_mul_rename, aeval_mul_rename]
+
 theorem prof_series (G H : TTGraph) (hG : G.src ≠ G.tgt) (hH : H.src ≠ H.tgt) (F : Type)
     [Field F] (a : G.E ⊕ H.E → F) :
     prof (G.series H) F a = ser (prof G F (a ∘ Sum.inl)) (prof H F (a ∘ Sum.inr)) := by
-  simp only [prof, kirchhoff_series, forest_series G H hG hH, map_mul, map_add, aeval_rename,
-    ser]
+  simp only [prof]
+  rw [kirchhoff_series, forest_series G H hG hH]
+  exact Prod.ext (aeval_mul_rename a _ _) (aeval_add_mul_rename a _ _ _ _)
 
 theorem prof_parallel (G H : TTGraph) (hG : G.src ≠ G.tgt) (hH : H.src ≠ H.tgt) (F : Type)
     [Field F] (a : G.E ⊕ H.E → F) :
     prof (G.parallel H) F a =
       sw (ser (sw (prof G F (a ∘ Sum.inl))) (sw (prof H F (a ∘ Sum.inr)))) := by
-  simp only [prof, kirchhoff_parallel G H hG hH, forest_parallel G H hG hH, map_mul, map_add,
-    aeval_rename, ser, sw]
-  ext
-  · simp only; ring
-  · simp only; ring
+  simp only [prof]
+  rw [kirchhoff_parallel G H hG hH, forest_parallel G H hG hH]
+  exact Prod.ext (aeval_add_mul_rename a _ _ _ _) (aeval_mul_rename a _ _)
 
 theorem kirchhoff_edge : kirchhoffPoly TTGraph.edge.ends = 1 := by
+  classical
   unfold kirchhoffPoly
   have hV : Fintype.card TTGraph.edge.V = 2 := rfl
   have hE : Fintype.card TTGraph.edge.E = 1 := rfl
   rw [Finset.sum_eq_single Finset.univ]
   · simp
   · intro T hT hne
-    rw [Finset.mem_filter] at hT
+    simp only [Finset.mem_filter] at hT
     exact absurd (Finset.eq_univ_of_card T (by have := hT.2.1; omega)) hne
   · intro h
     exfalso
     apply h
-    rw [Finset.mem_filter]
+    simp only [Finset.mem_filter]
     refine ⟨Finset.mem_univ _, by rw [Finset.card_univ, hE, hV], ?_⟩
     intro u v
     have step : Relation.ReflTransGen
@@ -274,18 +291,19 @@ theorem kirchhoff_edge : kirchhoffPoly TTGraph.edge.ends = 1 := by
 
 theorem forest_edge :
     forestPoly TTGraph.edge.ends TTGraph.edge.src TTGraph.edge.tgt = X () := by
+  classical
   unfold forestPoly
   have hV : Fintype.card TTGraph.edge.V = 2 := rfl
   rw [Finset.sum_eq_single ∅]
   · rw [Finset.compl_empty]
     exact Finset.prod_singleton (fun e : Unit => (X e : MvPolynomial Unit ℤ)) ()
   · intro T hT hne
-    rw [Finset.mem_filter] at hT
+    simp only [Finset.mem_filter] at hT
     exact absurd (Finset.card_eq_zero.mp (by have := hT.2.1; omega)) hne
   · intro h
     exfalso
     apply h
-    rw [Finset.mem_filter]
+    simp only [Finset.mem_filter]
     refine ⟨Finset.mem_univ _, by rw [Finset.card_empty, hV], ?_, ?_⟩
     · intro v
       cases v
@@ -300,11 +318,12 @@ theorem forest_edge :
 theorem good_edge (F : Type) [Field F] [Fintype F] :
     Good (prof TTGraph.edge F) (Fintype.card F) 0 0 1 1 := by
   have hp : ∀ a, prof TTGraph.edge F a = (1, a ()) := fun a => by
-    simp [prof, kirchhoff_edge, forest_edge]
+    simp only [prof, kirchhoff_edge, forest_edge, map_one]
+    exact Prod.ext rfl (aeval_X _ _)
   have hR : ∀ r : F, cnt (prof TTGraph.edge F) (pR r) = 1 := by
     intro r
     unfold cnt
-    rw [Nat.card_eq_one_iff_unique]
+    rw [Nat.cast_eq_one, Nat.card_eq_one_iff_unique]
     refine ⟨⟨fun a b => ?_⟩, ⟨⟨fun _ => r, ?_⟩⟩⟩
     · obtain ⟨a, ha⟩ := a
       obtain ⟨b, hb⟩ := b
@@ -315,17 +334,17 @@ theorem good_edge (F : Type) [Field F] [Fintype F] :
       exact ha.2.trans hb.2.symm
     · rw [hp]; simp [pR]
   refine ⟨?_, ?_, ?_, hR 0, fun r _ => hR r⟩
-  · rw [Nat.card_congr (Equiv.funUnique Unit F), Nat.card_eq_fintype_card]
+  · have : Nat.card (TTGraph.edge.E → F) = Nat.card F := Nat.card_congr (Equiv.funUnique Unit F)
+    rw [this, Nat.card_eq_fintype_card]
   · unfold cnt
-    rw [Nat.card_eq_zero]
+    rw [Nat.cast_eq_zero, Nat.card_eq_zero]
     left
     exact ⟨fun ⟨a, ha⟩ => by rw [hp] at ha; simp [pZ] at ha⟩
   · unfold cnt
-    rw [Nat.card_eq_zero]
+    rw [Nat.cast_eq_zero, Nat.card_eq_zero]
     left
     exact ⟨fun ⟨a, ha⟩ => by rw [hp] at ha; simp [pA] at ha⟩
 
-open Polynomial in
 theorem key (s : SP) : s.toGraph.src ≠ s.toGraph.tgt ∧
     ∃ QN QZ QA QC Qd : Polynomial ℤ, ∀ (F : Type) [Field F] [Fintype F],
       Good (prof s.toGraph F) (QN.eval (Fintype.card F : ℤ)) (QZ.eval (Fintype.card F : ℤ))
@@ -333,7 +352,7 @@ theorem key (s : SP) : s.toGraph.src ≠ s.toGraph.tgt ∧
         (Qd.eval (Fintype.card F : ℤ)) := by
   induction s with
   | edge =>
-    refine ⟨Bool.false_ne_true, X, 0, 0, 1, 1, fun F _ _ => ?_⟩
+    refine ⟨Bool.false_ne_true, Polynomial.X, 0, 0, 1, 1, fun F _ _ => ?_⟩
     exact good_congr (fun _ => rfl) (good_edge F) (by simp) (by simp) (by simp) (by simp)
       (by simp)
   | series s t ihs iht =>
@@ -341,7 +360,8 @@ theorem key (s : SP) : s.toGraph.src ≠ s.toGraph.tgt ∧
     obtain ⟨ht, QN₂, QZ₂, QA₂, QC₂, Qd₂, h₂⟩ := iht
     refine ⟨?_, QN₁ * QN₂, QZ₁ * QN₂ + QN₁ * QZ₂ - QZ₁ * QZ₂,
       QZ₁ * QZ₂ + QA₁ * (QN₂ - QZ₂) + (QN₁ - QZ₁) * QA₂,
-      QC₁ * QC₂ + (X - 1) * Qd₁ * Qd₂, QC₁ * Qd₂ + Qd₁ * QC₂ + (X - 2) * Qd₁ * Qd₂,
+      QC₁ * QC₂ + (Polynomial.X - 1) * Qd₁ * Qd₂,
+      QC₁ * Qd₂ + Qd₁ * QC₂ + (Polynomial.X - 2) * Qd₁ * Qd₂,
       fun F _ _ => ?_⟩
     · show (s.toGraph.series t.toGraph).src ≠ (s.toGraph.series t.toGraph).tgt
       simp [TTGraph.series, Ne.symm ht]
@@ -349,18 +369,19 @@ theorem key (s : SP) : s.toGraph.src ≠ s.toGraph.tgt ∧
       have h := good_equiv (Equiv.sumArrowEquivProdArrow s.toGraph.E t.toGraph.E F)
         (good_ser (h₁ F) (h₂ F))
       refine good_congr (fun a => ?_) h ?_ ?_ ?_ ?_ ?_
-      · rw [prof_series _ _ hs ht]; rfl
-      all_goals simp only [eval_add, eval_sub, eval_mul, eval_X, eval_one, eval_ofNat]
+      · exact (prof_series _ _ hs ht F a).symm
+      all_goals simp only [Polynomial.eval_add, Polynomial.eval_sub, Polynomial.eval_mul,
+        Polynomial.eval_X, Polynomial.eval_one, Polynomial.eval_ofNat]
   | parallel s t ihs iht =>
     obtain ⟨hs, QN₁, QZ₁, QA₁, QC₁, Qd₁, h₁⟩ := ihs
     obtain ⟨ht, QN₂, QZ₂, QA₂, QC₂, Qd₂, h₂⟩ := iht
     refine ⟨?_, QN₁ * QN₂,
       ((QA₁ + QC₁) * (QA₂ + QC₂) + QA₁ * (QN₂ - (QA₂ + QC₂)) + (QN₁ - (QA₁ + QC₁)) * QA₂) +
-        ((QZ₁ - QA₁) * (QZ₂ - QA₂) + (X - 1) * Qd₁ * Qd₂),
+        ((QZ₁ - QA₁) * (QZ₂ - QA₂) + (Polynomial.X - 1) * Qd₁ * Qd₂),
       (QA₁ + QC₁) * (QA₂ + QC₂) + QA₁ * (QN₂ - (QA₂ + QC₂)) + (QN₁ - (QA₁ + QC₁)) * QA₂,
       ((QA₁ + QC₁) * QN₂ + QN₁ * (QA₂ + QC₂) - (QA₁ + QC₁) * (QA₂ + QC₂)) -
         ((QA₁ + QC₁) * (QA₂ + QC₂) + QA₁ * (QN₂ - (QA₂ + QC₂)) + (QN₁ - (QA₁ + QC₁)) * QA₂),
-      (QZ₁ - QA₁) * Qd₂ + Qd₁ * (QZ₂ - QA₂) + (X - 2) * Qd₁ * Qd₂,
+      (QZ₁ - QA₁) * Qd₂ + Qd₁ * (QZ₂ - QA₂) + (Polynomial.X - 2) * Qd₁ * Qd₂,
       fun F _ _ => ?_⟩
     · show (s.toGraph.parallel t.toGraph).src ≠ (s.toGraph.parallel t.toGraph).tgt
       simp [TTGraph.parallel, hs]
@@ -368,8 +389,9 @@ theorem key (s : SP) : s.toGraph.src ≠ s.toGraph.tgt ∧
       have h := good_equiv (Equiv.sumArrowEquivProdArrow s.toGraph.E t.toGraph.E F)
         (good_sw (good_ser (good_sw (h₁ F)) (good_sw (h₂ F))))
       refine good_congr (fun a => ?_) h ?_ ?_ ?_ ?_ ?_
-      · rw [prof_parallel _ _ hs ht]; rfl
-      all_goals simp only [eval_add, eval_sub, eval_mul, eval_X, eval_one, eval_ofNat]
+      · exact (prof_parallel _ _ hs ht F a).symm
+      all_goals simp only [Polynomial.eval_add, Polynomial.eval_sub, Polynomial.eval_mul,
+        Polynomial.eval_X, Polynomial.eval_one, Polynomial.eval_ofNat]
 
 end Graphs
 
@@ -381,7 +403,7 @@ integer coefficients, independent of the field. -/
 theorem kontsevich_seriesParallel (s : SP) :
     ∃ P : Polynomial ℤ, ∀ (F : Type) [Field F] [Fintype F],
       (pointCount s.toGraph.ends F : ℤ) = P.eval (Fintype.card F : ℤ) := by
-  obtain ⟨-, -, QZ, -, -, -, h⟩ := Count.key s
+  obtain ⟨_, _, QZ, _, _, _, h⟩ := Count.key s
   exact ⟨QZ, fun F _ _ => (h F).2.1⟩
 
 end Kontsevich
