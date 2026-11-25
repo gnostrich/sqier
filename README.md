@@ -111,7 +111,7 @@ Proofs: `Squier/GrowthDefs.lean`, `Squier/Transfer.lean`, `Squier/Growth.lean`. 
 is by normal-form length; for length-reducing or shortlex complete systems this is the usual
 growth series, but the general geodesic statement is not claimed.
 
-## Third entry: Fagin's zero-one law (`comparator-fagin.json`)
+## Supporting development, not submitted: Fagin's zero-one law (`comparator-fagin.json`)
 
 [`ChallengeFagin.lean`](ChallengeFagin.lean) states seven theorems (namespace `FaginChallenge`);
 metadata in [`fagin/formalization.yaml`](fagin/formalization.yaml). For a first-order sentence
