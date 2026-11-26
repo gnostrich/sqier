@@ -226,11 +226,13 @@ fidelity:
 
 review:
   status: >-
-    self-assessed; automated mechanical checks (lake build with sorry
-    census; lake comparator from the pinned Lean v4.35.0 toolchain with
-    statement match and replay through Lean's kernel, NanoDa and con-ron);
-    no line-by-line human review of proof terms; no external mathematical
-    peer review
+    self-assessed; repository-level mechanical checks only (lake build
+    with a sorry census, #print axioms, and lake comparator with replay
+    through Lean's kernel, run locally and in this repository's CI). These
+    are distinct from Palomar's own verification, whose independent kernel
+    replays are separately pinned by Palomar and are not described here. No
+    line-by-line human review of proof terms; no external mathematical peer
+    review
   reviewers:
     - "Rohan Badade (self)"
   notes: >-
@@ -238,7 +240,8 @@ review:
     #print axioms on every compared theorem (propext, Classical.choice,
     Quot.sound); and lake comparator with comparator-fagin.json against
     ChallengeFagin.lean, covering statement match, definition identity, the
-    axiom allowlist and kernel replay. Checked by a human: the choice of
+    axiom allowlist and replay through Lean's kernel. These repository
+    checks are distinct from Palomar's verification. Checked by a human: the choice of
     statements and this file. Not done: line-by-line human reading of proof
     terms; external mathematical review.
 
