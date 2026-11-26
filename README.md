@@ -11,6 +11,10 @@ development proves Newman's lemma, the critical pair lemma for string rewriting
 and the finiteness of critical pairs. It also works through the
 rewriting system of the symmetric group `S₃` as an example.
 
+Registered in the Palomar registry as
+[PALOMAR-2026-11-26-000002](https://palomar-registry.org/entry.html?id=PALOMAR-2026-11-26-000002&version=1)
+(version 1, commit `37d3c23`).
+
 ## The picture
 
 The rules of a rewriting system are the permitted moves on words. The
