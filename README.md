@@ -97,7 +97,7 @@ parallel paths, finite derivation type would hold trivially; it does not.
 | `Squier/Main.lean` | Squier's theorem: normal-form paths, noetherian induction, the homotopy basis; finite derivation type |
 | `Squier/S3Aux.lean`, `Squier/S3.lean` | The `S₃` example: non-degeneracy invariant, termination, enumeration of the ten critical branchings, the explicit basis |
 
-## Second entry: growth series are rational (`comparator-growth.json`)
+## Supporting development, not registered: growth series are rational (`comparator-growth.json`)
 
 [`ChallengeGrowth.lean`](ChallengeGrowth.lean) states seven theorems (namespace
 `SquierGrowthChallenge`); metadata in [`growth/formalization.yaml`](growth/formalization.yaml).
@@ -115,7 +115,11 @@ Proofs: `Squier/GrowthDefs.lean`, `Squier/Transfer.lean`, `Squier/Growth.lean`. 
 is by normal-form length; for length-reducing or shortlex complete systems this is the usual
 growth series, but the general geodesic statement is not claimed.
 
-## Third entry: point counts of graph hypersurfaces (`comparator-kontsevich.json`)
+## Second entry: point counts of graph hypersurfaces (`comparator-kontsevich.json`)
+
+Registered in the Palomar registry as
+[PALOMAR-2026-11-26-000047](https://palomar-registry.org/entry.html?id=PALOMAR-2026-11-26-000047&version=1)
+(version 1, commit `bc5dd3e`).
 
 [`ChallengeKontsevich.lean`](ChallengeKontsevich.lean) states seven theorems (namespace
 `KontsevichChallenge`); metadata in [`kontsevich/formalization.yaml`](kontsevich/formalization.yaml).
