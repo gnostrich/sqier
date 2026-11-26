@@ -1,0 +1,19 @@
+{
+  "challenge_module": "ChallengeKontsevich",
+  "solution_module": "SolutionKontsevich",
+  "theorem_names": [
+    "KontsevichChallenge.kirchhoff_series",
+    "KontsevichChallenge.forest_series",
+    "KontsevichChallenge.kirchhoff_parallel",
+    "KontsevichChallenge.forest_parallel",
+    "KontsevichChallenge.kontsevich_seriesParallel",
+    "KontsevichChallenge.banana_count",
+    "KontsevichChallenge.k4_count"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}

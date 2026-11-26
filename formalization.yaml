@@ -1,0 +1,384 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+# formalization.yaml v0.4. Comparator configuration: comparator.json.
+version: "v0.4"
+
+project:
+  name: "Squier's theorem: finite convergent string rewriting systems have finite derivation type, with Newman's lemma, the critical pair lemma and the symmetric group S3 as a worked example"
+  description: >-
+    A string rewriting system is a finite set of rules l -> r between words.
+    Its derivation graph has the words as vertices and the rewriting steps
+    x l y -> x r y as edges. This entry proves in Lean 4 and Mathlib
+    Squier's theorem: for a terminating system, one resolution cell per
+    critical pair generates every homotopy between parallel zig-zag paths
+    of derivations. Hence a finite convergent system over a finite alphabet
+    has finite derivation type (Squier, Otto and Kobayashi 1994). Nine
+    statements are compared.
+
+    Homotopy modulo a set B of 2-cells (pairs of parallel paths) is the
+    smallest relation on parallel paths that contains B and the
+    independence squares (two steps rewriting disjoint factors commute),
+    identifies a step followed by its inverse, in either order, with the
+    empty path, is an equivalence relation, and is compatible with
+    concatenation, inversion and whiskering by contexts x _ y. B is a
+    homotopy basis if any two parallel paths are homotopic modulo B. A
+    system has finite derivation type if it has a finite homotopy basis.
+    A critical branching is a pair of distinct, non-independent steps from
+    a common word with minimal context, that is, an overlap or an inclusion
+    of two left-hand sides.
+
+    (1) Newman's lemma for an arbitrary relation: terminating and locally
+    confluent implies confluent. (2) The critical pair lemma for string
+    rewriting: a system is locally confluent if and only if every critical
+    branching is joinable. (3) Hence a terminating system is confluent if
+    and only if its critical branchings are joinable. (4) Over a finite
+    alphabet, a finite system has finitely many critical branchings.
+    (5) Squier's theorem in homotopy-basis form: for a terminating system,
+    every set of cells containing, for each critical branching, a cell
+    formed by the branching and some resolution of it (in either
+    orientation) is a homotopy basis. The resolutions are arbitrary, so
+    every choice of one resolution per critical pair gives a homotopy
+    basis. (6) Squier's theorem: a finite convergent system over a finite
+    alphabet has finite derivation type. (7) Non-degeneracy: the homotopy
+    relation does not identify everything. For the system aa -> e,
+    bb -> e, bab -> aba and no cells, the two one-step rewrites aaa -> a
+    are not homotopic, which a parity-weighted count of aa-steps detects.
+    (8)-(9) That system, a complete presentation of the symmetric group
+    S3 = <a, b | a^2 = b^2 = 1, bab = aba>, is terminating and confluent,
+    and its five explicit critical-pair cells form a homotopy basis.
+
+    The proof of (5) follows Squier and Guiraud–Malbos. Normal-form paths
+    are chosen by well-founded recursion. A noetherian induction then
+    shows that every step followed by the normal-form path of its target
+    is homotopic to the normal-form path of its source, resolving each
+    local branching as an independence square, a trivial branching, or a
+    whiskered critical cell. All results are classical. We searched for a
+    previous machine-checked proof of Squier's theorem (November 2026) and
+    found none; priority among formalizations is nevertheless unknown.
+  authors:
+    - "Rohan Badade"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Rohan Badade"
+
+classification:
+  arxiv: ["math.CT", "cs.LO"]
+  msc2020: ["68Q42", "20M05", "18N30", "68V20"]
+
+sources:
+  - title: "A finiteness condition for rewriting systems"
+    authors:
+      - "Craig C. Squier"
+      - "Friedrich Otto"
+      - "Yuji Kobayashi"
+    id: "doi:10.1016/0304-3975(94)90175-9"
+    type: paper
+    location: "Theoretical Computer Science 131(2) (1994), 271-294; Theorem 5.2 (critical-pair cells form a homotopy basis) and Theorem 5.3 (finite convergent presentations have finite derivation type), theorem numbers as cited by Guiraud and Malbos (2018). The original was not consulted directly."
+    relationship: formalizes
+    license: "unknown"
+    author_endorsement: not-contacted
+    note: >-
+      The entry formalizes Squier's theorem for string rewriting systems,
+      results (5) and (6), in the homotopical formulation, with homotopy
+      defined on zig-zag paths of the derivation graph (see fidelity).
+      Tietze invariance of finite derivation type (Theorem 4.3 there, as
+      cited by Guiraud and Malbos) and Squier's counterexample monoid
+      (Theorem 6.7 and Corollary 6.8 there) are not formalized.
+  - title: "Polygraphs of finite derivation type"
+    authors:
+      - "Yves Guiraud"
+      - "Philippe Malbos"
+    id: "doi:10.1017/S0960129516000220"
+    type: paper
+    location: "Mathematical Structures in Computer Science 28(2) (2018), 155-201; arXiv:1402.2587. Lemma 3.1.5 (critical branching lemma), Theorem 3.1.6 (Newman's lemma), Section 4.1 (homotopy bases, finite derivation type), Theorems 4.3.2 and 4.3.3 (Squier's theorems)."
+    relationship: formalizes
+    license: "unknown"
+    author_endorsement: not-contacted
+    note: >-
+      The blueprint followed: the definitions of critical branchings,
+      homotopy bases and finite derivation type, and the proof of Theorem
+      4.3.2 by normal-form paths and noetherian induction. The entry treats
+      the case of string rewriting systems (2-polygraphs with one 0-cell),
+      not general polygraphs.
+  - title: "On theories with a combinatorial definition of \"equivalence\""
+    authors:
+      - "M. H. A. Newman"
+    id: "doi:10.2307/1968867"
+    type: paper
+    location: "Annals of Mathematics (2) 43(2) (1942), 223-243; Theorem 3"
+    relationship: formalizes
+    license: "unknown"
+    author_endorsement: "n/a"
+    note: "Result (1), Newman's lemma, in the abstract form for an arbitrary relation."
+  - title: "Simple word problems in universal algebras"
+    authors:
+      - "Donald E. Knuth"
+      - "Peter B. Bendix"
+    id: "doi:10.1016/B978-0-08-012975-4.50028-X"
+    type: paper
+    location: "Computational Problems in Abstract Algebra (J. Leech, ed.), Pergamon, 1970, 263-297"
+    relationship: background
+    license: "unknown"
+    author_endorsement: "n/a"
+    note: >-
+      Origin of the critical pair lemma for term rewriting. The entry
+      proves its string rewriting form, result (2), following Guiraud and
+      Malbos, Lemma 3.1.5; Knuth–Bendix completion is not formalized.
+  - title: "String-Rewriting Systems"
+    authors:
+      - "Ronald V. Book"
+      - "Friedrich Otto"
+    id: "doi:10.1007/978-1-4613-9771-7"
+    type: book
+    location: "Springer, 1993"
+    relationship: background
+    license: "unknown"
+    author_endorsement: "n/a"
+    note: "Standard reference for string rewriting, critical pairs and complete systems; no specific result is cited from it."
+  - title: "Polygraphs: From Rewriting to Higher Categories"
+    authors:
+      - "Dimitri Ara"
+      - "Albert Burroni"
+      - "Yves Guiraud"
+      - "Philippe Malbos"
+      - "François Métayer"
+      - "Samuel Mimram"
+    id: "doi:10.1017/9781009498968"
+    type: book
+    location: "Cambridge University Press, 2025; arXiv:2312.00429"
+    relationship: background
+    license: "unknown"
+    author_endorsement: "n/a"
+    note: "Background on polygraphs, coherent presentations and the (2,1)-categorical setting of Squier's theorem."
+  - title: "mathlib4: the Lean mathematical library"
+    authors:
+      - "The Mathlib Community"
+    id: "https://github.com/leanprover-community/mathlib4"
+    type: other
+    location: "Mathlib v4.35.0, as pinned by lakefile.toml and lake-manifest.json"
+    relationship: background
+    license: "Apache-2.0"
+    author_endorsement: "n/a"
+    note: >-
+      The ambient library. Challenge.lean imports only Mathlib, which
+      supplies lists, finite sets, well-foundedness and the
+      reflexive-transitive closure and join of a relation. Mathlib has no
+      general Newman's lemma, no critical pairs and no string rewriting
+      theory; these are developed here.
+
+related_formalizations:
+  - id: "https://bitbucket.org/fplab/confluencecoherence"
+    relationship: independent
+    note: >-
+      Kraus and von Raumer, "A rewriting coherence theorem with applications
+      in homotopy type theory", Mathematical Structures in Computer Science
+      32(7) (2022), 982-1014, doi:10.1017/S0960129523000026, formalized in
+      Agda. It proves an abstract coherence theorem (a terminating
+      generalised 2-polygraph, closed under congruence and cancelling
+      inverses, with a Winkler–Buchberger structure, has a homotopy basis),
+      a relative of Squier's theorem for abstract rewriting. It has no
+      critical pairs of string rewriting systems and no finite derivation
+      type. No code is shared.
+  - id: "https://github.com/leanprover/cslib"
+    relationship: independent
+    note: >-
+      CSLib (Lean 4) contains Newman's lemma for abstract relations
+      (Cslib/Foundations/Relation/Confluence.lean), an earlier Lean proof
+      of result (1). Not used here.
+  - id: "https://www.isa-afp.org/entries/First_Order_Rewriting.html"
+    relationship: independent
+    note: >-
+      The Isabelle AFP (Abstract Rewriting; First-Order Rewriting, from
+      IsaFoR) contains Newman's lemma and the critical pair lemma for term
+      rewriting. Kim (ITP 2025, LIPIcs.ITP.2025.10) proves a critical pair
+      lemma for semi-Thue systems in Isabelle. These are earlier proofs of
+      results of the kind of (1)-(3), in other systems; neither contains
+      homotopy bases or finite derivation type.
+  - id: "PALOMAR-2026-09-01-000010"
+    relationship: other
+    note: >-
+      Thematic link only (confluence certificates via decreasing diagrams);
+      no code, definition or statement is shared.
+
+status:
+  scope: >-
+    Formalized: exactly the nine statements listed in comparator.json and
+    stated in Challenge.lean, with sorry-free proofs in Squier/. All are
+    unconditional. The setting is string rewriting: rules are a Finset of
+    pairs of lists over an arbitrary alphabet, which must be finite only
+    in (4) and (6).
+
+    Not claimed. Tietze invariance (finite derivation type is a property of
+    the monoid, independent of the finite presentation); Squier's
+    counterexample monoid (finitely presented, decidable word problem, not
+    of finite derivation type, hence with no finite convergent
+    presentation); homological finiteness (FP3) and its relation to finite
+    derivation type; general polygraphs and higher-dimensional
+    coherence; Knuth–Bendix completion. Decidability of critical pairs
+    is shown only through their finiteness and the worked example. The
+    results are classical; we searched for an earlier machine-checked proof
+    of Squier's theorem and found none, but priority is unknown. Newman's
+    lemma and the critical pair lemma were formalized before (see
+    related_formalizations). Proof terms were not reviewed line by line by
+    a human; see the review block.
+
+    Sorry and native_decide. The development is sorry-free and
+    native_decide-free, and the compared theorems depend only on propext,
+    Classical.choice and Quot.sound. Challenge.lean's nine deliberate
+    sorries are the comparator placeholders and are not counted.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: agent
+      models: ["Claude (Anthropic)"]
+      framework: "Claude Code"
+      tool_setup: >-
+        From the author's brief, Claude (Anthropic) designed the
+        definitions and fixed the Lean statements, wrote Challenge.lean,
+        Solution.lean, comparator.json and this file, and checked the
+        statement surface with lake comparator against sorried interfaces.
+        Parallel Claude agents, one per module (Newman and the critical pair
+        lemma; the classification of branchings and finiteness; the path
+        algebra and Squier's theorem; the S3 example), wrote the proofs by
+        iterating against the Lean compiler on the pinned toolchain. A
+        separate agent searched for earlier formalizations and checked the
+        bibliographic data.
+      cost:
+        wall_time: "about one and a half hours"
+        spend_usd: "not tracked"
+        hardware: "cloud container, 4 cores"
+      prompting_notes: >-
+        Work was posed as written targets with fixed signatures, a short
+        mathematical route per agent, and the axiom budget (propext,
+        Quot.sound, Classical.choice only; no sorry, no native_decide).
+    - method: manual
+      models: []
+      framework: "n/a"
+      tool_setup: >-
+        The human author chose the target (Squier's theorem as the geometry
+        of the space of permitted moves), wrote the brief with the
+        statements, the worked example and the design checks, and takes
+        responsibility for all claims.
+      cost:
+        wall_time: "not tracked"
+        spend_usd: "not tracked"
+        hardware: "not tracked"
+      prompting_notes: "n/a"
+  spend_usd: "not tracked"
+  notes: >-
+    Human conception and brief; AI-designed definitions and statements and
+    AI-written Lean proofs (Claude). No human has reviewed the proof terms
+    line by line. The trust model is Lean's kernel plus the axiom audit and
+    the comparator check described under review.
+
+fidelity:
+  divergences: >-
+    Between the repository and Challenge.lean, which is what Palomar
+    compares: Challenge.lean imports only Mathlib and contains verbatim
+    copies of all definitions in Squier/Defs.lean (namespace Squier); the
+    statements are in the namespace SquierChallenge. There are no
+    individual statement deviations.
+
+    Against the sources: Squier and Guiraud–Malbos define homotopy as a
+    congruence on the 2-cells of the free (2,1)-category generated by the
+    rewriting system, where the exchange law is built in. Here the 2-cells
+    are zig-zag paths of rewriting steps (lists of steps, each forwards or
+    backwards), and the homotopy relation is generated explicitly by the
+    given cells, the independence squares (which play the role of the
+    exchange law), and the cancellation of a step against its inverse, as
+    a relation closed under equivalence, concatenation, inversion and
+    whiskering. This follows Squier's own formulation as Guiraud and
+    Malbos describe it (Introduction, "Finite derivation type"): rewriting
+    steps in both directions, with the squares of independent rewrites
+    filled, which Guiraud and Malbos identify with the exchange relations
+    of the (2,1)-category. The equivalence of the two formulations is not
+    formalized. A family of generating confluences
+    (exactly one cell per critical branching) is generalized to any set
+    of cells containing at least one resolution cell for each critical
+    branching, in either orientation; this includes every family of
+    generating confluences. In (5) convergence is weakened to termination,
+    since resolving every critical branching implies confluence. Finite
+    derivation type in (6) is stated for the given system; its invariance
+    under change of finite presentation is not stated. Critical branchings
+    are ordered pairs (both orders of each critical pair occur), defined
+    structurally: distinct, not independent, and with no common nonempty
+    left or right context.
+
+review:
+  status: >-
+    self-assessed; automated mechanical checks in this repository's CI
+    (lake build with sorry census; lake comparator from the pinned Lean
+    v4.35.0 toolchain with statement match and replay through Lean's
+    kernel, NanoDa and con-ron); no line-by-line human review of proof
+    terms; no external mathematical peer review
+  reviewers:
+    - "Rohan Badade (self)"
+  notes: >-
+    Checked mechanically: lake build on the pinned toolchain with no sorry
+    warnings and no errors; #print axioms on every compared theorem
+    (propext, Classical.choice, Quot.sound); and the toolchain's lake
+    comparator with comparator.json against Challenge.lean, covering
+    statement match, definition identity, the axiom allowlist and kernel
+    replay. These repository checks are distinct from Palomar's own
+    verification. The five S3 cells were checked by hand against the
+    critical pairs before formalization and are verified in Lean. Checked
+    by a human: the choice of statements and this file. Not done:
+    line-by-line human reading of proof terms; external mathematical
+    review.
+
+alignment:
+  namespace: "SquierChallenge"
+  statements:
+    - source: "Newman (1942), Theorem 3; Guiraud–Malbos (2018), Theorem 3.1.6"
+      lean: "SquierChallenge.newman"
+      module: "Challenge"
+      status: proved
+      note: "Terminating and locally confluent implies confluent, for an arbitrary relation. Proved as Squier.newman."
+    - source: "Critical pair lemma; Guiraud–Malbos (2018), Lemma 3.1.5"
+      lean: "SquierChallenge.critical_pair_lemma"
+      module: "Challenge"
+      status: proved
+      note: "A string rewriting system is locally confluent iff every critical branching is joinable. Proved as Squier.critical_pair_lemma."
+    - source: "Newman's lemma with the critical pair lemma (Knuth–Bendix criterion for string rewriting)"
+      lean: "SquierChallenge.confluent_iff_criticalPairs_joinable"
+      module: "Challenge"
+      status: proved
+      note: "A terminating system is confluent iff every critical branching is joinable. Proved as Squier.confluent_iff_criticalPairs_joinable."
+    - source: "Finiteness of critical pairs of a finite system (standard)"
+      lean: "SquierChallenge.criticalBranchings_finite"
+      module: "Challenge"
+      status: proved
+      note: "Over a finite alphabet, a finite system has finitely many critical branchings. Proved as Squier.criticalBranchings_finite."
+    - source: "Squier–Otto–Kobayashi (1994), Theorem 5.2; Guiraud–Malbos (2018), Theorem 4.3.2"
+      lean: "SquierChallenge.squier_homotopy_basis"
+      module: "Challenge"
+      status: proved
+      note: "For a terminating system, every set of cells containing a resolution cell for each critical branching is a homotopy basis (convergence weakened to termination; see fidelity). Proved as Squier.squier_homotopy_basis."
+    - source: "Squier–Otto–Kobayashi (1994), Theorem 5.3; Guiraud–Malbos (2018), Theorem 4.3.3"
+      lean: "SquierChallenge.squier_finiteDerivationType"
+      module: "Challenge"
+      status: proved
+      note: "A finite convergent system over a finite alphabet has finite derivation type. Proved as Squier.squier_finiteDerivationType."
+    - source: "Sanity check of the definitions (not from a source)"
+      lean: "SquierChallenge.homotopy_nondegenerate"
+      module: "Challenge"
+      status: proved
+      note: "With no cells, the two rewrites aaa -> a of the S3 system are not homotopic, so the homotopy relation is not trivial. Proved as Squier.homotopy_nondegenerate."
+    - source: "Worked example: the Coxeter presentation of S3"
+      lean: "SquierChallenge.s3_convergent"
+      module: "Challenge"
+      status: proved
+      note: "The system aa -> e, bb -> e, bab -> aba is terminating and confluent. Proved as Squier.s3_convergent."
+    - source: "Worked example: a homotopy basis of S3 from its critical pairs"
+      lean: "SquierChallenge.s3_homotopy_basis"
+      module: "Challenge"
+      status: proved
+      note: "The five critical-pair cells (overlaps aaa, bbb, bbab, babb, babab) form a homotopy basis. Proved as Squier.s3_homotopy_basis."
+
+acknowledgements: >-
+  Mathlib and its community, and the Lean 4 toolchain and the Lean FRO, for
+  the library and kernel this development rests on. Claude, by Anthropic,
+  designed the statements and wrote the Lean proofs from the author's brief.
+  The author conceived the entry and takes responsibility for all claims.

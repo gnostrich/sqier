@@ -1,0 +1,47 @@
+name = "Sqier"
+defaultTargets = ["Squier", "Solution", "SolutionGrowth", "Fagin", "SolutionFagin", "Kontsevich", "SolutionKontsevich"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "v4.35.0"
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[lean_lib]]
+name = "Squier"
+globs = ["Squier", "Squier.+"]
+
+[[lean_lib]]
+name = "Challenge"
+
+[[lean_lib]]
+name = "Solution"
+
+[[lean_lib]]
+name = "ChallengeGrowth"
+
+[[lean_lib]]
+name = "SolutionGrowth"
+
+[[lean_lib]]
+name = "Fagin"
+globs = ["Fagin", "Fagin.+"]
+
+[[lean_lib]]
+name = "ChallengeFagin"
+
+[[lean_lib]]
+name = "SolutionFagin"
+
+[[lean_lib]]
+name = "Kontsevich"
+globs = ["Kontsevich", "Kontsevich.+"]
+
+[[lean_lib]]
+name = "ChallengeKontsevich"
+
+[[lean_lib]]
+name = "SolutionKontsevich"

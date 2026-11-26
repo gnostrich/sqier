@@ -1,0 +1,19 @@
+{
+  "challenge_module": "ChallengeGrowth",
+  "solution_module": "SolutionGrowth",
+  "theorem_names": [
+    "SquierGrowthChallenge.avoidCount_rational",
+    "SquierGrowthChallenge.unique_normalForm",
+    "SquierGrowthChallenge.growth_eq_avoidCount",
+    "SquierGrowthChallenge.growth_rational",
+    "SquierGrowthChallenge.s3_growth",
+    "SquierGrowthChallenge.s3_card",
+    "SquierGrowthChallenge.comm2_growth"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}
